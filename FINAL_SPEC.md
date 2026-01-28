@@ -1617,3 +1617,179 @@ ui/src/app/
 ---
 
 That's your agentic Practo killer.
+
+---
+
+## How Each Piece Is Solved (Custom vs Proven)
+
+### HIPAA/DPDP Compliance
+
+| Requirement | Solution | Custom Code? |
+|-------------|----------|--------------|
+| **Encryption at rest** | Supabase default (AES-256) | ❌ No - built-in |
+| **Encryption in transit** | Vercel/Supabase HTTPS | ❌ No - built-in |
+| **Row Level Security** | Supabase RLS policies | ~20 lines SQL |
+| **Audit logging** | DB triggers + table | ~50 lines SQL |
+| **Consent collection** | UI checkbox + DB field | ~30 lines |
+| **OTP for Rx links** | Supabase Auth magic links | ❌ No - built-in |
+| **Session timeout** | Clerk configuration | ❌ No - config only |
+| **2FA** | Clerk TOTP | ❌ No - built-in |
+| **Data export (Right to Access)** | API endpoint + PDF | ~100 lines |
+| **Deletion workflow** | UI + DB table | ~80 lines |
+
+**Total custom code for compliance: ~280 lines**
+
+### Manual EMR Browsing
+
+| Component | Solution | Custom Code? |
+|-----------|----------|--------------|
+| **Patient search page** | Kiranism DataTable | ~50 lines (layout) |
+| **Patient detail layout** | Kiranism layout + tabs | ~80 lines |
+| **Timeline tab** | react-chrono (4k stars) | ~40 lines (data mapping) |
+| **Prescriptions tab** | Kiranism DataTable | ~40 lines |
+| **Labs tab** | Kiranism DataTable + Recharts | ~60 lines |
+| **Documents tab** | Uppy (upload) + grid | ~80 lines |
+| **Vitals tab** | Recharts graphs | ~60 lines |
+
+**Total custom code for EMR browsing: ~410 lines**
+
+### Summary: What's Custom vs Proven
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│  TOTAL CODEBASE BREAKDOWN                                               │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│  Proven Open Source:     260,000+ lines (99.5%)                        │
+│  ├── Moltbot              ~50,000 lines                                │
+│  ├── Kiranism dashboard   ~15,000 lines                                │
+│  ├── react-hook-form      ~10,000 lines                                │
+│  ├── react-pdf            ~20,000 lines                                │
+│  ├── Uppy                 ~30,000 lines                                │
+│  ├── tesseract.js         ~15,000 lines                                │
+│  ├── Recharts             ~25,000 lines                                │
+│  └── Others               ~95,000 lines                                │
+│                                                                         │
+│  Custom Glue Code:       ~1,500 lines (0.5%)                           │
+│  ├── UI layouts           ~400 lines                                   │
+│  ├── API tool endpoints   ~300 lines                                   │
+│  ├── Compliance           ~280 lines                                   │
+│  ├── EMR browsing         ~410 lines                                   │
+│  └── Configs/types        ~110 lines                                   │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Licensing Analysis (CRITICAL)
+
+### All Repos & Their Licenses
+
+| Component | License | Commercial OK? | Notes |
+|-----------|---------|----------------|-------|
+| **Moltbot** | MIT | ✅ Yes | Free to use, modify, sell |
+| **Kiranism starter** | MIT | ✅ Yes | Free to use, modify, sell |
+| **assistant-ui** | MIT | ✅ Yes | Free to use, modify, sell |
+| **react-hook-form** | MIT | ✅ Yes | Free to use, modify, sell |
+| **react-pdf** | MIT | ✅ Yes | Free to use, modify, sell |
+| **Uppy** | MIT | ✅ Yes | Free to use, modify, sell |
+| **tesseract.js** | Apache 2.0 | ✅ Yes | Free, must include license |
+| **react-chrono** | MIT | ✅ Yes | Free to use, modify, sell |
+| **Workbox** | MIT | ✅ Yes | Google-maintained |
+| **RecordRTC** | MIT | ✅ Yes | Free to use, modify, sell |
+| **Recharts** | MIT | ✅ Yes | Free to use, modify, sell |
+| **react-to-print** | MIT | ✅ Yes | Free to use, modify, sell |
+| **react-qr-code** | MIT | ✅ Yes | Free to use, modify, sell |
+| **Supabase** | Apache 2.0 | ✅ Yes | Self-host free, or use cloud |
+| **Clerk** | Proprietary SaaS | ✅ Yes | Pay per user |
+| **Razorpay** | Proprietary SaaS | ✅ Yes | Pay per transaction |
+| **AgentMail** | Proprietary SaaS | ✅ Yes | Pay per email |
+| **OpenFDA API** | Public Domain | ✅ Yes | Free US government API |
+
+### ⚠️ CRITICAL LEGAL RISK: WhatsApp (Baileys)
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│  ⚠️  WARNING: BAILEYS WHATSAPP LIBRARY                                  │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│  License: MIT ✅                                                        │
+│  BUT: Violates WhatsApp Terms of Service ❌                            │
+│                                                                         │
+│  RISKS:                                                                 │
+│  • WhatsApp can ban your phone number permanently                      │
+│  • Meta has sent cease & desist letters to businesses                  │
+│  • No legal recourse if banned                                         │
+│  • Patient communication could be disrupted suddenly                   │
+│                                                                         │
+│  WHO USES BAILEYS ANYWAY:                                              │
+│  • Small businesses (risk acceptable)                                  │
+│  • Personal projects                                                   │
+│  • Countries where Meta doesn't enforce strictly                       │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+### WhatsApp Options Comparison
+
+| Option | Cost | Legal Risk | Setup Difficulty |
+|--------|------|------------|------------------|
+| **Baileys (Moltbot default)** | Free | ⚠️ HIGH | Easy |
+| **WhatsApp Business API (Official)** | ₹4-7 per conversation | ✅ None | Hard (Meta approval) |
+| **Twilio for WhatsApp** | ₹0.4-4 per message | ✅ None | Medium |
+| **Gupshup** | ₹0.5-3 per message | ✅ None | Medium |
+| **Wati.io** | ₹2,500/mo + per message | ✅ None | Easy |
+
+### Recommendation
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│  RECOMMENDED APPROACH                                                   │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│  PHASE 1 (MVP/Testing): Use Baileys                                    │
+│  • Faster to build                                                     │
+│  • Free                                                                │
+│  • Acceptable risk for testing with small patient base                 │
+│  • Don't send >100 messages/day                                        │
+│                                                                         │
+│  PHASE 2 (Production): Migrate to Official API                         │
+│  • Apply for WhatsApp Business API (takes 2-4 weeks)                  │
+│  • Or use Twilio/Gupshup as intermediary                              │
+│  • Cost: ~₹3,000-5,000/month for typical clinic                       │
+│                                                                         │
+│  MIGRATION PATH:                                                       │
+│  • Moltbot can be configured to use different WhatsApp backends       │
+│  • Your code stays the same, only config changes                      │
+│  • Patient experience unchanged                                        │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+### Other Legal Considerations
+
+| Area | Risk | Mitigation |
+|------|------|------------|
+| **Medical liability** | Doctor signs all Rx | AI only drafts, never signs |
+| **Data breach** | Patient data exposed | Encryption + audit logs |
+| **Prescription errors** | Wrong drug/dose | Drug interaction checks, doctor approval |
+| **Record retention** | Legal requirement | 3-year auto-retention policy |
+| **Patient consent** | DPDP violation | Explicit consent collection |
+
+---
+
+## Updated Cost Estimate (With Official WhatsApp)
+
+| Item | Cost (Baileys) | Cost (Official WhatsApp) |
+|------|----------------|--------------------------|
+| Moltbot | Free | Free |
+| Supabase | $25/mo | $25/mo |
+| Clerk | $25/mo | $25/mo |
+| AgentMail | ~₹500/mo | ~₹500/mo |
+| Anthropic API | ~$20/mo | ~$20/mo |
+| **WhatsApp** | **Free** | **₹3,000-5,000/mo** |
+| Razorpay | 2% per txn | 2% per txn |
+| **TOTAL** | **~₹4,000/mo** | **~₹8,000-10,000/mo** |
+
+Still 5-10x cheaper than Practo (₹10,000-50,000/month)
