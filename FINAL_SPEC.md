@@ -71,7 +71,20 @@
 | **OCR** | [tesseract.js](https://github.com/naptha/tesseract.js) | 37,791 | Extract text from scans |
 | **Timeline** | [react-chrono](https://github.com/prabhuignoto/react-chrono) | 4,161 | Patient visit history |
 
-### Total: 220,000+ ⭐ of proven code
+### NEW: Real-World Feature Components
+
+| Component | Repo | Stars | What It Does |
+|-----------|------|-------|--------------|
+| **Payments** | [Razorpay Web SDK](https://razorpay.com/docs/) | - | UPI, Cards, Netbanking (India) |
+| **Offline/PWA** | [Workbox](https://github.com/GoogleChrome/workbox) | 12,500 | Offline caching, background sync |
+| **Voice Recording** | [RecordRTC](https://github.com/muaz-khan/RecordRTC) | 6,500 | Record audio in browser |
+| **Voice Transcription** | Whisper (via Moltbot) | - | Speech-to-text for dictation |
+| **Drug Database** | [OpenFDA API](https://open.fda.gov/) | Free API | Drug interactions, side effects |
+| **Charts/Analytics** | [Recharts](https://github.com/recharts/recharts) | 24,000 | Revenue graphs, patient trends |
+| **Print** | [react-to-print](https://github.com/gregnb/react-to-print) | 2,100 | Print prescriptions directly |
+| **QR Code** | [react-qr-code](https://github.com/rosskhanas/react-qr-code) | 1,000 | UPI payment QR, prescription link |
+
+### Total: 260,000+ ⭐ of proven code
 
 ---
 
@@ -140,45 +153,83 @@ await mail.send({
 
 ### 3. EMR App (Web Interface)
 
-**For Doctors at Desk:**
+**For Doctors at Desk - UPDATED with Vitals, Payments, Queue:**
 
 ```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│  AI Clinical Coordinator                              Dr. XYZ    [Logout]   │
-├─────────────────┬─────────────────────────────┬─────────────────────────────┤
-│                 │                             │                             │
-│  PATIENT QUEUE  │  PRESCRIPTION               │  SECRETARY                  │
-│                 │                             │                             │
-│  ┌───────────┐  │  Patient: Rajesh Kumar      │  ┌─────────────────────┐   │
-│  │ 09:30     │  │  Age/Sex: 55/M              │  │ Secretary: Rajesh   │   │
-│  │ Rajesh K  │  │  UHID: P-2024-001           │  │ sent BP readings.   │   │
-│  │ Follow-up │  │                             │  │ 140/90 on 3 days.   │   │
-│  │ [Arrived] │  │  ─────────────────────────  │  │                     │   │
-│  ├───────────┤  │                             │  │ Suggesting:         │   │
-│  │ 10:00     │  │  Rx:                        │  │ - Add Amlodipine    │   │
-│  │ Shweta S  │  │  1. Telmisartan 40mg [OD▼]  │  │ - Review in 2 wks   │   │
-│  │ New       │  │     [14 days▼]              │  │                     │   │
-│  │ [Waiting] │  │     सुबह - 14 दिन            │  │ [Accept] [Edit]     │   │
-│  ├───────────┤  │                             │  └─────────────────────┘   │
-│  │ 10:30     │  │  2. [+ Add Medicine]        │                             │
-│  │ Abdul K   │  │                             │  ┌─────────────────────┐   │
-│  │ Post-PCI  │  │  ─────────────────────────  │  │                     │   │
-│  │ [Done]    │  │                             │  │ Type a message...   │   │
-│  └───────────┘  │  Follow-up: [14 days▼]      │  │                     │   │
-│                 │  Advice: [Review BP log]    │  └─────────────────────┘   │
-│  ───────────    │                             │                             │
-│  DUE TODAY: 3   │  [Save Draft] [Sign & Send] │  PENDING: 2 approvals      │
-│  OVERDUE: 2     │                             │                             │
-│                 │                             │                             │
-└─────────────────┴─────────────────────────────┴─────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────────────┐
+│  AI Clinical Coordinator                    📅 28 Jan   💰 ₹4,200 today   Dr. XYZ  │
+├────────────────────┬────────────────────────────────────┬───────────────────────────┤
+│                    │                                    │                           │
+│  TOKEN QUEUE       │  CURRENT PATIENT                   │  SECRETARY                │
+│  ──────────────    │  ──────────────────                │  ─────────────────        │
+│                    │                                    │                           │
+│  #12 → IN NOW      │  Rajesh Kumar (55/M)               │  💬 Rajesh sent BP:       │
+│  ┌──────────────┐  │  UHID: P-2024-001                  │  140/90, 138/88, 142/92   │
+│  │ #12 Rajesh K │  │  ⚠️ Allergic: Sulfa               │  (last 3 days)            │
+│  │ Follow-up    │  │  📋 HTN, DM-2                      │                           │
+│  │ BP: 138/88   │  │                                    │  Suggesting:              │
+│  │ ₹300 PAID ✓  │  │  ┌─ VITALS (just recorded) ─────┐ │  • Add Amlodipine 5mg     │
+│  │ [IN ROOM]    │  │  │ BP: 138/88  Pulse: 78        │ │  • Review in 2 weeks      │
+│  ├──────────────┤  │  │ SpO2: 98%   Wt: 72kg         │ │                           │
+│  │ #13 Shweta S │  │  └──────────────────────────────┘ │  [Accept] [Modify]        │
+│  │ New patient  │  │                                    │                           │
+│  │ --/--        │  │  ┌─ PRESCRIPTION ───────────────┐ │  ─────────────────        │
+│  │ ₹500 PENDING │  │  │ 1. Telmisartan 40mg  [OD▼]  │ │                           │
+│  │ [WAITING]    │  │  │    सुबह - 14 दिन             │ │  📎 Pending:              │
+│  ├──────────────┤  │  │                              │ │  • 2 Rx approvals         │
+│  │ #14 Abdul K  │  │  │ 2. Metformin 500mg   [BD▼]  │ │  • 1 lab report           │
+│  │ Post-PCI     │  │  │    सुबह-रात - 30 दिन         │ │  • 3 payment reminders    │
+│  │ BP: 124/80   │  │  │                              │ │                           │
+│  │ ₹300 PAID ✓  │  │  │ [+ Add Medicine]             │ │  ─────────────────        │
+│  │ [WAITING]    │  │  └──────────────────────────────┘ │                           │
+│  ├──────────────┤  │                                    │  🎤 [Voice Note]          │
+│  │ #-- Walk-in  │  │  ┌─ LABS & ADVICE ──────────────┐ │                           │
+│  │ [+ ADD]      │  │  │ Order: [ ] CBC  [ ] HbA1c   │ │  ┌───────────────────┐    │
+│  └──────────────┘  │  │        [ ] Lipid [ ] KFT    │ │  │ Type message...   │    │
+│                    │  │ Follow-up: [14 days▼]        │ │  └───────────────────┘    │
+│  ──────────────    │  │ Advice: Control salt intake  │ │                           │
+│  Today: 14 seen    │  └──────────────────────────────┘ │                           │
+│  Waiting: 3        │                                    │                           │
+│  ₹4,200 collected  │  [Save Draft]  [Sign & Send ₹300] │  [View Analytics]         │
+│                    │                                    │                           │
+└────────────────────┴────────────────────────────────────┴───────────────────────────┘
 ```
+
+**Key UI Changes:**
+- **Token numbers** instead of times (walk-ins don't have times)
+- **Vitals visible** before prescription (BP/Pulse/SpO2/Weight)
+- **Allergy warning** prominent (⚠️ Sulfa)
+- **Payment status** on each patient (PAID ✓ / PENDING)
+- **Daily collection** in header (₹4,200)
+- **Walk-in button** at bottom of queue
+- **Lab order checkboxes** for common tests
+- **Voice note button** for dictation
+
+---
+
+## Missing Features Added (Real User Perspective)
+
+### What Was Missing
+
+| Feature | Why It's Critical |
+|---------|-------------------|
+| **Vitals** | BP/Pulse/Weight recorded BEFORE doctor sees patient |
+| **Payments** | Doctor needs to get paid! Invoice, UPI, receipt |
+| **Walk-ins** | 60% of patients don't book, they just show up |
+| **Lab Orders** | "Get blood test done" is 30% of consultations |
+| **Patient Documents** | Old reports, other doctor's prescriptions |
+| **Allergies** | "Patient allergic to Penicillin" - CRITICAL |
+| **Doctor Leave** | Block dates, auto-reply when unavailable |
+| **Offline Mode** | Internet dies in tier-3 cities |
+| **Voice Dictation** | Doctor speaks, AI types - 5x faster |
+| **Analytics** | "How many patients this month?" |
 
 ---
 
 ## Database Schema (Supabase)
 
 ```sql
--- Patients
+-- Patients (UPDATED with allergies)
 CREATE TABLE patients (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT NOT NULL,
@@ -187,6 +238,11 @@ CREATE TABLE patients (
   age INT,
   sex TEXT,
   uhid TEXT UNIQUE,
+  blood_group TEXT,
+  allergies TEXT[],              -- CRITICAL: Drug allergies
+  chronic_conditions TEXT[],     -- Diabetes, HTN, etc.
+  emergency_contact TEXT,
+  aadhaar_last4 TEXT,            -- For identification
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -292,6 +348,131 @@ CREATE TABLE interactions (
   channel TEXT NOT NULL,
   direction TEXT NOT NULL, -- 'inbound' | 'outbound'
   content TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- VITALS (recorded before doctor sees patient)
+CREATE TABLE vitals (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  encounter_id UUID REFERENCES encounters(id),
+  bp_systolic INT,
+  bp_diastolic INT,
+  pulse INT,
+  temperature DECIMAL(4,1),      -- in Fahrenheit
+  weight DECIMAL(5,1),           -- in kg
+  spo2 INT,                      -- oxygen saturation %
+  recorded_by TEXT,              -- 'assistant' | 'self' | 'doctor'
+  recorded_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- PAYMENTS (every consultation needs payment)
+CREATE TABLE payments (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  encounter_id UUID REFERENCES encounters(id),
+  patient_id UUID REFERENCES patients(id),
+  amount DECIMAL(10,2) NOT NULL,
+  type TEXT NOT NULL,            -- 'consultation' | 'procedure' | 'medicine'
+  method TEXT,                   -- 'cash' | 'upi' | 'card' | 'pending'
+  upi_ref TEXT,                  -- UPI transaction ID
+  receipt_number TEXT,
+  status TEXT DEFAULT 'pending', -- 'pending' | 'paid' | 'waived'
+  paid_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- PATIENT DOCUMENTS (old reports, other prescriptions)
+CREATE TABLE patient_documents (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  patient_id UUID REFERENCES patients(id),
+  type TEXT NOT NULL,            -- 'lab_report' | 'prescription' | 'scan' | 'discharge_summary' | 'insurance'
+  title TEXT,
+  file_url TEXT NOT NULL,        -- Supabase storage
+  extracted_text TEXT,           -- OCR result from tesseract.js
+  report_date DATE,              -- Date ON the document
+  source TEXT,                   -- 'uploaded' | 'received_whatsapp' | 'lab_direct'
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- LAB ORDERS
+CREATE TABLE lab_orders (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  encounter_id UUID REFERENCES encounters(id),
+  patient_id UUID REFERENCES patients(id),
+  tests TEXT[] NOT NULL,         -- ['CBC', 'LFT', 'Lipid Profile']
+  lab_name TEXT,                 -- 'Lal PathLabs' | 'Thyrocare' | 'Local'
+  status TEXT DEFAULT 'ordered', -- 'ordered' | 'collected' | 'reported'
+  report_document_id UUID REFERENCES patient_documents(id),
+  ordered_at TIMESTAMPTZ DEFAULT NOW(),
+  reported_at TIMESTAMPTZ
+);
+
+-- DOCTOR AVAILABILITY (leave, blocked slots)
+CREATE TABLE doctor_availability (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  date DATE NOT NULL,
+  session TEXT,                  -- NULL = full day, 'morning' | 'evening'
+  status TEXT NOT NULL,          -- 'available' | 'leave' | 'limited'
+  reason TEXT,                   -- 'vacation' | 'conference' | 'emergency'
+  max_patients INT,              -- For 'limited' days
+  auto_reply TEXT,               -- Custom message for patients
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- QUEUE (walk-ins + appointments, token system)
+CREATE TABLE queue (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  date DATE NOT NULL DEFAULT CURRENT_DATE,
+  patient_id UUID REFERENCES patients(id),
+  appointment_id UUID REFERENCES appointments(id),  -- NULL for walk-ins
+  token_number INT,
+  type TEXT NOT NULL,            -- 'scheduled' | 'walk_in'
+  status TEXT DEFAULT 'waiting', -- 'waiting' | 'in_progress' | 'done' | 'no_show'
+  check_in_at TIMESTAMPTZ,
+  called_at TIMESTAMPTZ,
+  completed_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- VOICE NOTES (doctor dictation)
+CREATE TABLE voice_notes (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  encounter_id UUID REFERENCES encounters(id),
+  audio_url TEXT NOT NULL,       -- Supabase storage
+  transcript TEXT,               -- Whisper transcription
+  duration_seconds INT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- REFERRALS
+CREATE TABLE referrals (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  encounter_id UUID REFERENCES encounters(id),
+  patient_id UUID REFERENCES patients(id),
+  to_doctor TEXT NOT NULL,       -- Name of specialist
+  specialty TEXT,                -- 'Cardiologist' | 'Orthopedic' etc
+  reason TEXT,
+  letter_pdf_url TEXT,
+  status TEXT DEFAULT 'referred', -- 'referred' | 'visited' | 'feedback_received'
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- CONSULTATION FEES (doctor's rate card)
+CREATE TABLE fee_schedule (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  type TEXT NOT NULL,            -- 'new_consultation' | 'follow_up' | 'procedure_X'
+  amount DECIMAL(10,2) NOT NULL,
+  valid_from DATE DEFAULT CURRENT_DATE,
+  valid_to DATE
+);
+
+-- OFFLINE SYNC LOG (for tier-3 internet issues)
+CREATE TABLE sync_log (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  table_name TEXT NOT NULL,
+  record_id UUID NOT NULL,
+  operation TEXT NOT NULL,       -- 'insert' | 'update' | 'delete'
+  data JSONB NOT NULL,
+  synced BOOLEAN DEFAULT false,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 ```
@@ -407,6 +588,242 @@ const clinicalWriteTools = {
 };
 ```
 
+### NEW: Vitals & Queue Tools
+
+```typescript
+const vitalsTools = {
+  record_vitals: {
+    description: "Record patient vitals before consultation",
+    parameters: {
+      encounter_id: "uuid",
+      bp_systolic: "number",
+      bp_diastolic: "number",
+      pulse: "number",
+      weight: "number",
+      spo2: "number"
+    }
+  },
+
+  get_vitals_trend: {
+    description: "Get patient's vitals history (for BP monitoring)",
+    parameters: { patient_id: "uuid", limit: "number" },
+    returns: "Vitals[]"
+  }
+};
+
+const queueTools = {
+  add_walk_in: {
+    description: "Add walk-in patient to today's queue",
+    parameters: { patient_id: "uuid", reason: "string" },
+    returns: "{ token_number: number, wait_estimate: string }"
+  },
+
+  get_queue_status: {
+    description: "Get current queue with wait times",
+    parameters: { date: "date" },
+    returns: "QueueEntry[]"
+  },
+
+  call_next_patient: {
+    description: "Mark next patient as in_progress",
+    parameters: {},
+    returns: "QueueEntry"
+  },
+
+  mark_patient_done: {
+    description: "Mark current patient as completed",
+    parameters: { queue_id: "uuid" }
+  }
+};
+```
+
+### NEW: Payment Tools
+
+```typescript
+const paymentTools = {
+  record_payment: {
+    description: "Record payment for consultation",
+    parameters: {
+      encounter_id: "uuid",
+      amount: "number",
+      method: "cash|upi|card",
+      upi_ref: "string?"
+    },
+    returns: "{ receipt_number: string }"
+  },
+
+  get_pending_payments: {
+    description: "List patients with unpaid consultations",
+    parameters: { date_range: "string" },
+    returns: "Payment[]"
+  },
+
+  get_daily_collection: {
+    description: "Today's collection summary",
+    parameters: { date: "date" },
+    returns: "{ total: number, cash: number, upi: number, pending: number }"
+  },
+
+  send_payment_reminder: {
+    description: "Draft payment reminder to patient",
+    parameters: { patient_id: "uuid", amount: "number" }
+  }
+};
+```
+
+### NEW: Lab & Document Tools
+
+```typescript
+const labTools = {
+  order_lab_tests: {
+    description: "Create lab order for patient",
+    parameters: {
+      encounter_id: "uuid",
+      tests: "string[]",
+      lab_name: "string?"
+    }
+  },
+
+  attach_lab_report: {
+    description: "Link uploaded report to lab order",
+    parameters: {
+      lab_order_id: "uuid",
+      document_id: "uuid"
+    }
+  },
+
+  get_pending_lab_results: {
+    description: "List ordered but unreported labs",
+    parameters: {},
+    returns: "LabOrder[]"
+  }
+};
+
+const documentTools = {
+  save_patient_document: {
+    description: "Save uploaded document to patient record",
+    parameters: {
+      patient_id: "uuid",
+      type: "lab_report|prescription|scan|insurance",
+      file_url: "string",
+      title: "string"
+    }
+  },
+
+  ocr_document: {
+    description: "Extract text from document image",
+    parameters: { document_id: "uuid" },
+    returns: "{ text: string }"
+  },
+
+  get_patient_documents: {
+    description: "List all documents for patient",
+    parameters: { patient_id: "uuid", type: "string?" },
+    returns: "Document[]"
+  }
+};
+```
+
+### NEW: Availability Tools
+
+```typescript
+const availabilityTools = {
+  block_date: {
+    description: "Block date for leave/conference",
+    parameters: {
+      date: "date",
+      session: "morning|evening|full_day",
+      reason: "string",
+      auto_reply: "string?"
+    }
+  },
+
+  get_availability: {
+    description: "Check if date is available for appointments",
+    parameters: { date: "date" },
+    returns: "AvailabilityStatus"
+  },
+
+  set_max_patients: {
+    description: "Limit patients for a specific day",
+    parameters: { date: "date", max: "number", reason: "string" }
+  }
+};
+```
+
+### NEW: Voice & Analytics Tools
+
+```typescript
+const voiceTools = {
+  transcribe_voice: {
+    description: "Transcribe doctor's voice note",
+    parameters: { audio_url: "string" },
+    returns: "{ transcript: string }"
+    // Uses Whisper via Moltbot
+  },
+
+  save_voice_note: {
+    description: "Save voice note with transcript to encounter",
+    parameters: {
+      encounter_id: "uuid",
+      audio_url: "string",
+      transcript: "string"
+    }
+  }
+};
+
+const analyticsTools = {
+  get_patient_count: {
+    description: "Patient count by period",
+    parameters: { period: "day|week|month" },
+    returns: "{ total: number, new: number, follow_up: number }"
+  },
+
+  get_revenue_summary: {
+    description: "Revenue summary by period",
+    parameters: { period: "day|week|month" },
+    returns: "{ total: number, collected: number, pending: number }"
+  },
+
+  get_common_diagnoses: {
+    description: "Top diagnoses in period",
+    parameters: { period: "month", limit: "number" },
+    returns: "{ diagnosis: string, count: number }[]"
+  },
+
+  get_followup_compliance: {
+    description: "% of patients who came for follow-up",
+    parameters: { period: "month" },
+    returns: "{ due: number, returned: number, rate: number }"
+  }
+};
+```
+
+### NEW: Allergy Check (Safety Critical)
+
+```typescript
+const safetyTools = {
+  check_drug_allergy: {
+    description: "Check if patient is allergic to drug",
+    parameters: { patient_id: "uuid", drug_name: "string" },
+    returns: "{ allergic: boolean, allergy: string? }"
+    // MUST be called before create_prescription_draft
+  },
+
+  add_allergy: {
+    description: "Add allergy to patient record",
+    parameters: { patient_id: "uuid", allergy: "string" }
+  },
+
+  get_drug_interactions: {
+    description: "Check for dangerous drug combinations",
+    parameters: { drugs: "string[]" },
+    returns: "{ interactions: DrugInteraction[] }"
+    // Uses open drug interaction database
+  }
+};
+```
+
 ### Forbidden (Do Not Exist)
 
 ```typescript
@@ -418,8 +835,129 @@ const forbidden = [
   "delete_patient",         // Never
   "exec",                   // No shell
   "browser_*",              // No browsing
+  "modify_payment_history", // Audit trail required
+  "delete_encounter",       // Medical records are permanent
 ];
 ```
+
+---
+
+## Offline Mode (Critical for Tier-3)
+
+**Problem:** Internet drops in tier-3 cities. Doctor is mid-consultation. App must not freeze.
+
+**Solution: PWA with Workbox + Local-first architecture**
+
+```typescript
+// Service worker strategy
+const strategies = {
+  // Static assets: Cache first
+  '/static/*': 'CacheFirst',
+
+  // API reads: Network first, fallback to cache
+  '/api/patients/*': 'NetworkFirst',
+  '/api/queue/*': 'NetworkFirst',
+
+  // API writes: Background sync
+  '/api/prescriptions': 'BackgroundSync',
+  '/api/vitals': 'BackgroundSync',
+  '/api/payments': 'BackgroundSync'
+};
+```
+
+**What works offline:**
+- ✅ View today's queue (cached)
+- ✅ View patient records (cached on access)
+- ✅ Write prescription (queued)
+- ✅ Record vitals (queued)
+- ✅ Record payment (queued)
+- ✅ Generate PDF (client-side)
+- ❌ Send WhatsApp (requires online)
+- ❌ Secretary chat (requires Moltbot)
+
+**Sync indicator in UI:**
+```
+┌──────────────────────────────────┐
+│ 🟢 Online                        │  ← Green = synced
+│ 🟡 3 pending changes...          │  ← Yellow = queued
+│ 🔴 Offline - changes will sync   │  ← Red = no internet
+└──────────────────────────────────┘
+```
+
+---
+
+## Payment Flow (Razorpay UPI)
+
+**India Reality:** 80% patients pay via UPI (PhonePe/GPay). Cash is declining.
+
+### Payment Options
+
+```
+┌─────────────────────────────────────────────┐
+│  COLLECT PAYMENT                            │
+│  ────────────────                           │
+│  Consultation Fee: ₹500                     │
+│                                             │
+│  ┌─────────┐  ┌─────────┐  ┌─────────┐     │
+│  │   UPI   │  │  CASH   │  │  LATER  │     │
+│  │  (QR)   │  │         │  │         │     │
+│  └─────────┘  └─────────┘  └─────────┘     │
+│                                             │
+│  ┌─────────────────────────────────────┐   │
+│  │                                     │   │
+│  │          [QR CODE HERE]             │   │
+│  │                                     │   │
+│  │   Scan with any UPI app             │   │
+│  │   clinic@razorpay                   │   │
+│  │                                     │   │
+│  └─────────────────────────────────────┘   │
+│                                             │
+│  UPI Ref: ____________  [Confirm Payment]  │
+│                                             │
+└─────────────────────────────────────────────┘
+```
+
+### Secretary handles payment reminders:
+```
+Secretary → Patient (WhatsApp):
+"Rajesh ji, aapka ₹500 consultation fee pending hai.
+Pay karne ke liye yeh link use karein:
+https://rzp.io/l/DrXYZ
+
+Ya clinic mein cash de sakte hain."
+```
+
+### Revenue Dashboard:
+```
+┌─────────────────────────────────────────────┐
+│  REVENUE - January 2025                     │
+│  ────────────────────                       │
+│                                             │
+│  Total:     ₹1,24,500                       │
+│  ├── UPI:   ₹89,200 (72%)                   │
+│  ├── Cash:  ₹31,800 (25%)                   │
+│  └── Pending: ₹3,500 (3%)                   │
+│                                             │
+│  Patients:  312  |  Avg: ₹399/visit         │
+│                                             │
+│  [Download Report]  [Send Reminders]        │
+└─────────────────────────────────────────────┘
+```
+
+---
+
+## Patient Notifications (Auto by Secretary)
+
+| Event | Channel | Message |
+|-------|---------|---------|
+| Appointment booked | WhatsApp | "Aapka appointment 28 Jan 10:00 AM ko confirmed hai" |
+| Reminder (1 day before) | WhatsApp | "Kal aapka appointment hai Dr. XYZ ke saath" |
+| Queue position | WhatsApp | "Aapka token #14 hai. Approx 30 min wait" |
+| Prescription ready | WhatsApp + Email | PDF attached |
+| Payment reminder | WhatsApp | Link to pay |
+| Lab report received | WhatsApp | "Aapki report aa gayi hai. Doctor review karenge" |
+| Follow-up due | WhatsApp | "Aapka follow-up due hai. Book karein?" |
+| Doctor on leave | WhatsApp | "Dr. XYZ 1-5 Feb ko available nahi hai" |
 
 ---
 
@@ -459,7 +997,7 @@ const duration: Record<string, string> = {
 
 ---
 
-## File Structure
+## File Structure (Updated)
 
 ```
 clinic-coordinator/
@@ -467,60 +1005,101 @@ clinic-coordinator/
 │   └── (secretary brain)
 │
 ├── ui/                               # Fork of Kiranism starter
+│   ├── public/
+│   │   ├── manifest.json             # PWA manifest
+│   │   └── sw.js                     # Service worker (Workbox)
+│   │
 │   ├── src/
 │   │   ├── app/
 │   │   │   ├── dashboard/
 │   │   │   │   └── page.tsx          # 3-panel layout
+│   │   │   ├── analytics/
+│   │   │   │   └── page.tsx          # Revenue + patient charts
+│   │   │   ├── settings/
+│   │   │   │   ├── fees/page.tsx     # Fee schedule
+│   │   │   │   └── availability/page.tsx  # Leave management
 │   │   │   └── api/
 │   │   │       └── tools/            # Tool endpoints
 │   │   │           ├── find-patient/route.ts
 │   │   │           ├── create-appointment/route.ts
-│   │   │           ├── draft-prescription/route.ts
+│   │   │           ├── record-vitals/route.ts
+│   │   │           ├── record-payment/route.ts
+│   │   │           ├── order-labs/route.ts
+│   │   │           ├── check-allergy/route.ts
 │   │   │           └── ...
 │   │   │
 │   │   ├── components/
-│   │   │   ├── queue-panel.tsx       # Uses Kiranism tables
+│   │   │   ├── queue-panel.tsx       # Token queue with walk-ins
+│   │   │   ├── vitals-form.tsx       # BP/Pulse/SpO2/Weight
 │   │   │   ├── prescription-panel.tsx # react-hook-form + shadcn
 │   │   │   ├── secretary-panel.tsx   # assistant-ui
-│   │   │   └── prescription-pdf.tsx  # react-pdf template
+│   │   │   ├── prescription-pdf.tsx  # react-pdf template
+│   │   │   ├── payment-modal.tsx     # UPI QR + cash
+│   │   │   ├── lab-order-panel.tsx   # Test selection
+│   │   │   ├── document-upload.tsx   # Uppy + OCR
+│   │   │   ├── voice-recorder.tsx    # RecordRTC + Whisper
+│   │   │   ├── allergy-badge.tsx     # Warning display
+│   │   │   ├── sync-indicator.tsx    # Online/offline status
+│   │   │   └── analytics-charts.tsx  # Recharts graphs
 │   │   │
 │   │   ├── lib/
 │   │   │   ├── hindi-templates.ts    # Pattern/freq/duration maps
 │   │   │   ├── moltbot-client.ts     # WebSocket to Moltbot
-│   │   │   └── supabase.ts           # DB client
+│   │   │   ├── supabase.ts           # DB client
+│   │   │   ├── razorpay.ts           # Payment integration
+│   │   │   ├── offline-sync.ts       # Background sync logic
+│   │   │   └── drug-interactions.ts  # OpenFDA API wrapper
 │   │   │
 │   │   └── features/
-│   │       ├── patients/             # CRUD
-│   │       ├── appointments/         # Queue management
-│   │       └── prescriptions/        # Rx workflow
+│   │       ├── patients/             # CRUD + allergies
+│   │       ├── queue/                # Token + walk-in management
+│   │       ├── vitals/               # Recording + trends
+│   │       ├── prescriptions/        # Rx workflow
+│   │       ├── payments/             # Collection + receipts
+│   │       ├── labs/                 # Orders + reports
+│   │       ├── documents/            # Upload + OCR
+│   │       └── analytics/            # Charts + export
 │   │
 │   └── package.json
 │
 ├── supabase/
 │   └── migrations/
-│       └── 001_initial.sql           # Schema above
+│       ├── 001_initial.sql           # Core schema
+│       ├── 002_vitals_payments.sql   # Vitals + payments
+│       └── 003_labs_documents.sql    # Labs + documents
 │
 ├── config/
 │   ├── moltbot.json                  # Tool allowlist
-│   └── agentmail.json                # Email config
+│   ├── agentmail.json                # Email config
+│   └── razorpay.json                 # Payment config
 │
 └── docker-compose.yml
 ```
 
 ---
 
-## What You Write (~600 lines)
+## What You Write (~1200 lines)
 
 | File | Lines | Purpose |
 |------|-------|---------|
 | `dashboard/page.tsx` | ~50 | 3-panel layout |
-| `queue-panel.tsx` | ~80 | Patient queue component |
+| `queue-panel.tsx` | ~100 | Token queue with walk-ins |
+| `vitals-form.tsx` | ~80 | BP/Pulse/SpO2 entry |
 | `prescription-panel.tsx` | ~150 | Prescription form |
 | `prescription-pdf.tsx` | ~100 | PDF template |
 | `secretary-panel.tsx` | ~30 | Embed assistant-ui |
-| `hindi-templates.ts` | ~50 | Copy from Casefold |
-| `api/tools/*.ts` | ~150 | Tool endpoints (6-8 files) |
-| **TOTAL** | **~610** | |
+| `payment-modal.tsx` | ~100 | UPI QR + cash flow |
+| `lab-order-panel.tsx` | ~80 | Test selection |
+| `voice-recorder.tsx` | ~60 | Record + transcribe |
+| `allergy-badge.tsx` | ~30 | Warning component |
+| `sync-indicator.tsx` | ~40 | Offline status |
+| `analytics-charts.tsx` | ~100 | Recharts graphs |
+| `hindi-templates.ts` | ~50 | Pattern/freq maps |
+| `offline-sync.ts` | ~80 | Background sync |
+| `api/tools/*.ts` | ~200 | Tool endpoints (15+ files) |
+| **TOTAL** | **~1,250** | Still tiny vs building from scratch |
+
+**Note:** 1,250 lines of glue code vs 50,000+ lines if built from scratch.
 
 ---
 
@@ -551,14 +1130,36 @@ services:
 
 ---
 
-## Success Metrics
+## Success Metrics (Updated)
 
 | Metric | Target | How to Measure |
 |--------|--------|----------------|
 | Messages handled without doctor | 70%+ | Auto-resolved / Total |
 | Follow-up compliance | +30% | Returned / Due |
 | Time per prescription | -50% | Avg time with vs without |
+| Payment collection rate | 95%+ | Collected / Billed |
+| Walk-in wait time | Show estimate | Patient satisfaction |
+| Offline resilience | 100% | Works when internet drops |
+| Lab report turnaround | <24hr | Order to attachment |
 | Doctor satisfaction | "Less mental load" | Subjective score |
+
+### Real Clinic KPIs
+
+```
+Before (Manual):
+- 40 patients/day
+- 3 staff (receptionist, nurse, billing)
+- 20% follow-up compliance
+- ₹15,000/month pending payments
+- Doctor works 10 hours
+
+After (AI Coordinator):
+- 50 patients/day (25% more)
+- 1 staff (nurse for vitals)
+- 60% follow-up compliance
+- ₹3,000/month pending payments
+- Doctor works 8 hours
+```
 
 ---
 
@@ -575,14 +1176,21 @@ services:
 
 ---
 
-## Timeline
+## Timeline (Updated)
 
 | Week | Deliverable |
 |------|-------------|
-| 1 | Moltbot + WhatsApp working with medical tools |
-| 2 | UI with 3 panels (Kiranism + assistant-ui) |
-| 3 | Prescription flow end-to-end |
-| 4 | Email (AgentMail) + testing in real clinic |
+| 1 | Moltbot + WhatsApp with core tools (patient lookup, appointments) |
+| 2 | UI foundation: Queue panel + Prescription panel + Secretary chat |
+| 3 | Vitals recording + Payment collection (UPI/Cash) |
+| 4 | Prescription flow: Form → PDF → WhatsApp/Email delivery |
+| 5 | Labs: Order → Upload → OCR → Attach to patient |
+| 6 | Offline mode (PWA) + Voice dictation |
+| 7 | Analytics dashboard + Doctor availability/leave |
+| 8 | Real clinic testing + bug fixes |
+
+**MVP (Week 4):** Doctor can see queue, write prescription, collect payment, send via WhatsApp.
+**Full (Week 8):** Everything works, even when internet dies.
 
 ---
 
@@ -603,6 +1211,41 @@ Compare to: Practo charges clinics ₹10,000-50,000/month
 
 ## Summary
 
-**220,000+ stars of proven code, ~600 lines of glue, WhatsApp + Email + App.**
+**260,000+ stars of proven code, ~1,250 lines of glue, WhatsApp + Email + App.**
+
+### What This System Does (Complete List)
+
+**For Patients:**
+- ✅ Book/cancel via WhatsApp
+- ✅ Get token number and wait estimate
+- ✅ Receive prescription on WhatsApp
+- ✅ Pay via UPI QR
+- ✅ Get follow-up reminders
+- ✅ Upload old reports
+
+**For Doctors:**
+- ✅ See token queue (walk-ins + scheduled)
+- ✅ View vitals before seeing patient
+- ✅ See allergy warnings
+- ✅ Write prescription with Hindi preview
+- ✅ Dictate via voice
+- ✅ Order lab tests
+- ✅ See lab reports when ready
+- ✅ Track payments
+- ✅ View analytics
+- ✅ Block dates for leave
+- ✅ Works offline
+
+**For Secretary (AI):**
+- ✅ Answer patient queries
+- ✅ Book appointments
+- ✅ Send reminders
+- ✅ Draft prescriptions for approval
+- ✅ Send payment reminders
+- ✅ Handle follow-ups
+- ✅ Attach lab reports
+- ✅ Auto-reply when doctor on leave
+
+---
 
 That's your agentic Practo killer.
