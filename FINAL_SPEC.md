@@ -1209,6 +1209,314 @@ Compare to: Practo charges clinics ₹10,000-50,000/month
 
 ---
 
+## LLM Selection: Secretary ≠ Doctor
+
+### The Insight
+
+A secretary doesn't need the world's smartest model. The tasks are:
+- Intent classification ("Is this a refill request?")
+- Appointment scheduling
+- Message drafting from templates
+- Data lookups and summaries
+- Hindi translation
+
+These are **NOT** tasks requiring Claude Opus. Cheaper models work perfectly.
+
+### Chinese LLM Options (10-30x Cheaper)
+
+| Model | Input/1M | Output/1M | Quality | Self-Host? | Best For |
+|-------|----------|-----------|---------|------------|----------|
+| **Kimi K2.5** | $0.60 | $3.00 | Excellent | ❌ | General secretary tasks |
+| **DeepSeek V3** | $0.27 | $1.10 | Excellent | ✅ | Can run on-premise |
+| **GLM-4.7** | ~$0.40 | ~$2.00 | Excellent | ✅ | Coding + general |
+| **Qwen 3** | $0.10 | $0.30 | Good | ✅ | Budget option |
+| **MiniMax M2** | 8% of Claude | 8% of Claude | Good | ❌ | Cost-effective |
+
+### Cost Comparison (30 patients/day, ~100 messages)
+
+| Model | Monthly Cost | Savings vs Claude |
+|-------|--------------|-------------------|
+| Claude Sonnet | ~₹1,500/mo | - |
+| Kimi K2.5 | ~₹150/mo | 90% cheaper |
+| DeepSeek V3 | ~₹100/mo | 93% cheaper |
+| Qwen 3 (self-hosted) | ~₹0/mo (GPU cost) | 100% cheaper |
+
+### Recommended: DeepSeek V3 or Kimi K2.5
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│  WHY DEEPSEEK V3                                                        │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│  ✅ 93% cheaper than Claude                                            │
+│  ✅ Can self-host (data never leaves your server)                      │
+│  ✅ MIT licensed                                                       │
+│  ✅ Excellent at Hindi + English                                       │
+│  ✅ Great tool calling support                                         │
+│  ✅ Context: 128K tokens (plenty for conversation history)            │
+│                                                                         │
+│  For PHI concerns: Self-hosted = data stays in India                   │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────┐
+│  WHY KIMI K2.5 (if not self-hosting)                                   │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│  ✅ 90% cheaper than Claude                                            │
+│  ✅ API available (easy setup)                                         │
+│  ✅ Excellent benchmarks (matches GPT-4)                               │
+│  ✅ Good for agentic tasks                                             │
+│  ❌ Data goes to Moonshot AI servers (China)                          │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+### Self-Hosted Option (Maximum Privacy)
+
+```
+Hardware for DeepSeek V3 / Qwen 3:
+┌─────────────────────────────────────────────────────────────────────────┐
+│                                                                         │
+│  Option A: Cloud GPU (Recommended for start)                           │
+│  • RunPod / Vast.ai / Lambda Labs                                      │
+│  • Cost: ₹15,000-25,000/month for 1x A100                             │
+│  • Data stays on your rented server                                    │
+│                                                                         │
+│  Option B: Buy GPU (Long-term)                                         │
+│  • RTX 4090 (24GB) - ₹1.5-2 lakh                                      │
+│  • Can run quantized DeepSeek V3                                       │
+│  • Zero ongoing LLM cost                                               │
+│                                                                         │
+│  Option C: Ollama on good CPU (Budget)                                 │
+│  • Qwen 3 7B runs on CPU                                               │
+│  • Slower but works                                                    │
+│  • Zero cost if you have a decent laptop                              │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+### LLM Selection Matrix
+
+| Use Case | Recommended Model | Reason |
+|----------|-------------------|--------|
+| **Secretary chat** | DeepSeek V3 / Kimi K2.5 | Cheap, good at conversation |
+| **Intent classification** | Qwen 3 (small) | Fast, cheap |
+| **Hindi translation** | DeepSeek V3 | Good multilingual |
+| **Voice transcription** | Whisper (local) | Free, works offline |
+| **Drug interactions** | OpenFDA API | No LLM needed - database lookup |
+| **Complex medical reasoning** | Claude (if ever needed) | Only for edge cases |
+
+---
+
+## India Healthcare Compliance (Day 1 - Not Afterthought)
+
+### Applicable Laws
+
+| Law | Status | What It Covers | Penalty |
+|-----|--------|----------------|---------|
+| **DPDP Act 2023** | Enacted, rules pending | All personal data | Up to ₹500 crore |
+| **DISHA** | Draft (not enforced) | Healthcare-specific HIPAA | TBD |
+| **ABDM Guidelines** | Active | Health ID, interoperability | - |
+| **IRDAI Guidelines** | Active | Insurance data | - |
+| **IMC Regulations** | Active | Medical records retention | License risk |
+| **IT Act 2000** | Active | Cyber security | Criminal |
+
+### DPDP Act 2023 Requirements (Mandatory)
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│  DATA FIDUCIARY OBLIGATIONS (You = Data Fiduciary)                     │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│  1. CONSENT (Before collecting data)                                   │
+│     • Must be explicit, informed, specific                             │
+│     • Patient can withdraw anytime                                     │
+│     • Must explain purpose clearly                                     │
+│                                                                         │
+│  2. PURPOSE LIMITATION                                                 │
+│     • Use data only for stated purpose                                 │
+│     • No selling to third parties                                      │
+│     • No surprise uses                                                 │
+│                                                                         │
+│  3. DATA MINIMIZATION                                                  │
+│     • Collect only what's needed                                       │
+│     • Don't hoard "just in case"                                       │
+│                                                                         │
+│  4. STORAGE LIMITATION                                                 │
+│     • Delete when no longer needed                                     │
+│     • Medical records: 3 year minimum, then patient choice             │
+│                                                                         │
+│  5. SECURITY SAFEGUARDS                                                │
+│     • Encryption at rest and transit                                   │
+│     • Access controls                                                  │
+│     • Breach notification to Board + patient                           │
+│                                                                         │
+│  6. BREACH NOTIFICATION                                                │
+│     • Report to Data Protection Board                                  │
+│     • Notify affected patients                                         │
+│     • Timeline: "Without delay" (likely 72 hours)                     │
+│                                                                         │
+│  7. DATA PRINCIPAL RIGHTS                                              │
+│     • Right to access their data                                       │
+│     • Right to correction                                              │
+│     • Right to erasure (with medical exceptions)                       │
+│     • Right to nominate (for death/incapacity)                        │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+### Day 1 Compliance Checklist
+
+```
+BEFORE FIRST PATIENT:
+┌─────────────────────────────────────────────────────────────────────────┐
+│                                                                         │
+│  □ Privacy Policy written (Hindi + English)                            │
+│  □ Consent form ready (WhatsApp + App)                                 │
+│  □ Data Processing Agreement (if using cloud services)                 │
+│  □ Encryption enabled (Supabase default ✓)                            │
+│  □ RLS policies written (who sees what)                                │
+│  □ Audit logging enabled                                               │
+│  □ Backup strategy documented                                          │
+│  □ Breach response plan written                                        │
+│  □ Data retention policy documented                                    │
+│  □ LLM data handling documented (which model, where data goes)        │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+### LLM + Compliance: The Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│  COMPLIANT LLM ARCHITECTURE                                            │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│  OPTION A: Self-Hosted (Maximum Compliance)                            │
+│                                                                         │
+│  Patient Message → Your Server → DeepSeek V3 (on same server)         │
+│                                    ↓                                   │
+│                              Response                                   │
+│                                    ↓                                   │
+│                              Patient                                    │
+│                                                                         │
+│  ✅ Data NEVER leaves your infrastructure                              │
+│  ✅ Full DPDP compliance                                               │
+│  ✅ Can be audited                                                     │
+│  Cost: ₹15-25k/month for cloud GPU                                    │
+│                                                                         │
+│  ─────────────────────────────────────────────────────────────────────  │
+│                                                                         │
+│  OPTION B: API with De-identification                                  │
+│                                                                         │
+│  Patient Message → De-identify → Kimi K2.5 API → Re-identify          │
+│  "Rajesh needs BP med" → "PATIENT_001 needs BP med" → Response        │
+│                                                                         │
+│  ⚠️ Medical context still visible (conditions, drugs)                 │
+│  ⚠️ Data goes to external server                                      │
+│  ✅ Much cheaper (~₹150/month)                                        │
+│  Need: Document this in privacy policy + get consent                  │
+│                                                                         │
+│  ─────────────────────────────────────────────────────────────────────  │
+│                                                                         │
+│  OPTION C: Hybrid (Recommended)                                        │
+│                                                                         │
+│  Non-PHI tasks → Cheap API (Kimi K2.5)                                │
+│  • "What are clinic timings?"                                         │
+│  • "Book appointment for tomorrow"                                    │
+│  • Intent classification                                               │
+│                                                                         │
+│  PHI tasks → Self-hosted (DeepSeek on your server)                   │
+│  • Prescription drafting                                               │
+│  • Patient history summary                                             │
+│  • Medical advice                                                      │
+│                                                                         │
+│  ✅ Compliant for sensitive data                                      │
+│  ✅ Cheap for routine tasks                                           │
+│  Cost: ~₹5-10k/month total                                            │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+### Data Residency
+
+```
+WHERE DATA LIVES:
+┌─────────────────────────────────────────────────────────────────────────┐
+│                                                                         │
+│  Component              Location           Compliant?                  │
+│  ─────────────────────────────────────────────────────────────────────  │
+│  Supabase               Mumbai (AWS)       ✅ Yes                      │
+│  Clerk                  US servers         ⚠️ Need DPA               │
+│  WhatsApp (Baileys)     Meta servers       ✅ E2E encrypted           │
+│  AgentMail              US servers         ⚠️ Need DPA               │
+│  LLM (self-hosted)      Your server        ✅ Yes                      │
+│  LLM (Kimi API)         China servers      ⚠️ Need disclosure        │
+│  Files (Supabase)       Mumbai (AWS)       ✅ Yes                      │
+│                                                                         │
+│  DPA = Data Processing Agreement                                       │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+### Consent Flow (Day 1)
+
+```
+FIRST WHATSAPP MESSAGE FROM PATIENT:
+┌─────────────────────────────────────────────────────────────────────────┐
+│                                                                         │
+│  Secretary: "Namaste! Dr. XYZ Clinic mein aapka swagat hai.           │
+│                                                                         │
+│  Aage badhne se pehle, kripya humari Privacy Policy padh lein:         │
+│  https://clinic.app/privacy                                            │
+│                                                                         │
+│  Hum aapka data sirf appointment aur treatment ke liye use karenge.   │
+│  Aap kabhi bhi apna data delete karwa sakte hain.                     │
+│                                                                         │
+│  Kya aap agree karte hain? Reply: HAAN ya NA"                         │
+│                                                                         │
+│  ─────────────────────────────────────────────────────────────────────  │
+│                                                                         │
+│  Patient: "HAAN"                                                       │
+│                                                                         │
+│  ─────────────────────────────────────────────────────────────────────  │
+│                                                                         │
+│  Secretary: "Dhanyavaad! Ab aap appointment book kar sakte hain.       │
+│  Kaise madad kar sakti hoon?"                                         │
+│                                                                         │
+│  [consent_given_at = NOW() saved to database]                          │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Updated Cost Estimate (With Cheaper LLM)
+
+| Item | Old (Claude) | New (DeepSeek/Kimi) |
+|------|--------------|---------------------|
+| LLM API | ₹1,500/mo | ₹100-150/mo |
+| Supabase | ₹2,000/mo | ₹2,000/mo |
+| Clerk | ₹2,000/mo | ₹2,000/mo |
+| WhatsApp (Baileys) | Free | Free |
+| AgentMail | ₹500/mo | ₹500/mo |
+| **TOTAL** | **₹6,000/mo** | **₹4,750/mo** |
+
+**Or with self-hosted LLM:**
+
+| Item | Cost |
+|------|------|
+| Cloud GPU (RunPod) | ₹15,000/mo |
+| Supabase | ₹2,000/mo |
+| Clerk | ₹2,000/mo |
+| WhatsApp | Free |
+| **TOTAL** | **₹19,000/mo** |
+
+But: Zero LLM API cost, maximum privacy, full compliance.
+
+---
+
 ## Data Privacy & Compliance (India + HIPAA-equivalent)
 
 ### Applicable Laws in India
