@@ -1209,6 +1209,374 @@ Compare to: Practo charges clinics ₹10,000-50,000/month
 
 ---
 
+## Data Privacy & Compliance (India + HIPAA-equivalent)
+
+### Applicable Laws in India
+
+| Law | What It Covers |
+|-----|----------------|
+| **DPDP Act 2023** | Digital Personal Data Protection (India's GDPR) |
+| **IT Act 2000** | Electronic records, cyber security |
+| **IMC Regulations** | Medical records retention (3 years minimum) |
+| **Telemedicine Guidelines 2020** | Remote consultation requirements |
+
+### Technical Implementation
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           SECURITY LAYERS                                   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  1. ENCRYPTION                                                              │
+│     ├── At Rest: Supabase default (AES-256)                                │
+│     ├── In Transit: HTTPS/TLS 1.3 everywhere                               │
+│     └── WhatsApp: End-to-end (Baileys uses Signal protocol)                │
+│                                                                             │
+│  2. ACCESS CONTROL (Supabase RLS)                                          │
+│     ├── Doctor sees: Only their clinic's patients                          │
+│     ├── Patient sees: Only their own records (future patient portal)       │
+│     └── Secretary: Read-only patient data, write to drafts only            │
+│                                                                             │
+│  3. AUDIT LOG (Every access recorded)                                      │
+│     ├── Who accessed what record                                           │
+│     ├── When (timestamp)                                                   │
+│     ├── From where (IP, device)                                            │
+│     └── What action (view, edit, download, share)                          │
+│                                                                             │
+│  4. CONSENT COLLECTION                                                     │
+│     ├── First WhatsApp message: "Do you consent to..."                     │
+│     ├── App registration: Checkbox with policy link                        │
+│     └── Stored in patients.consent_given_at                                │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Database Additions for Compliance
+
+```sql
+-- Consent tracking
+ALTER TABLE patients ADD COLUMN consent_given_at TIMESTAMPTZ;
+ALTER TABLE patients ADD COLUMN consent_version TEXT;  -- 'v1.0', 'v1.1' etc
+
+-- Audit log (CRITICAL - never delete)
+CREATE TABLE audit_log (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL,           -- Doctor or staff
+  user_type TEXT NOT NULL,         -- 'doctor' | 'staff' | 'system'
+  action TEXT NOT NULL,            -- 'view' | 'edit' | 'download' | 'share' | 'delete'
+  resource_type TEXT NOT NULL,     -- 'patient' | 'prescription' | 'document' | 'payment'
+  resource_id UUID NOT NULL,
+  patient_id UUID,                 -- Which patient's data
+  ip_address INET,
+  user_agent TEXT,
+  details JSONB,                   -- Extra context
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Index for compliance queries
+CREATE INDEX idx_audit_patient ON audit_log(patient_id, created_at);
+CREATE INDEX idx_audit_user ON audit_log(user_id, created_at);
+
+-- Data deletion requests (Right to Erasure)
+CREATE TABLE deletion_requests (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  patient_id UUID REFERENCES patients(id),
+  requested_at TIMESTAMPTZ DEFAULT NOW(),
+  reason TEXT,
+  status TEXT DEFAULT 'pending',   -- 'pending' | 'approved' | 'rejected' | 'completed'
+  processed_at TIMESTAMPTZ,
+  processed_by UUID,
+  notes TEXT                       -- Why rejected (medical records exception)
+);
+```
+
+### WhatsApp Message Safety
+
+```typescript
+// ❌ WRONG: PHI in message
+"Rajesh ji, aapki diabetes ki dawai Metformin 500mg ready hai"
+
+// ✅ RIGHT: Link to secure portal
+"Rajesh ji, aapka prescription ready hai.
+Dekhne ke liye: https://clinic.app/rx/abc123
+(Link 24 ghante mein expire hoga)"
+
+// Prescription PDF is behind authenticated link
+// Patient must verify OTP to view
+```
+
+### Data Retention Policy
+
+| Data Type | Retention | Reason |
+|-----------|-----------|--------|
+| Medical records | 3 years minimum | IMC requirement |
+| Prescriptions | 3 years | Legal requirement |
+| Audit logs | 7 years | Compliance |
+| WhatsApp messages | 1 year | Storage optimization |
+| Voice notes | 1 year | Storage optimization |
+| Deleted patient data | Anonymized, kept | Research/analytics |
+
+### Compliance Checklist
+
+- [ ] HTTPS everywhere (Vercel/Supabase default)
+- [ ] RLS policies on all patient tables
+- [ ] Audit log on every data access
+- [ ] Consent collection before storing data
+- [ ] OTP verification for prescription links
+- [ ] No PHI in plain WhatsApp messages
+- [ ] Data export for patient (Right to Access)
+- [ ] Deletion request workflow
+- [ ] Staff access tied to clinic, not global
+- [ ] Session timeout (30 min inactive)
+- [ ] 2FA for doctor login (Clerk supports)
+
+---
+
+## Manual Record Browsing (Full EMR View)
+
+### The Problem
+
+The 3-panel AI workflow is great for consultations. But sometimes:
+- Doctor wants to see patient's complete history
+- Doctor wants to browse all lab reports
+- Doctor wants to compare old prescriptions
+- Doctor wants to read previous notes
+- Doctor is researching before a complex case
+
+**Solution: Add a "Patient Detail" page - classic EMR view**
+
+### Patient Detail Page (New)
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────────┐
+│  ← Back to Queue                                     🔍 Search patients             │
+├─────────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                     │
+│  RAJESH KUMAR                                                          [Edit Info] │
+│  ─────────────────────────────────────────────────────────────────────────────────  │
+│  UHID: P-2024-001  |  Age: 55  |  Sex: M  |  Phone: +91 98765 43210               │
+│  ⚠️ Allergies: Sulfa, Penicillin  |  📋 Conditions: HTN, DM-2, Hypothyroid        │
+│                                                                                     │
+├────────────────┬────────────────────────────────────────────────────────────────────┤
+│                │                                                                    │
+│  QUICK STATS   │  [Timeline]  [Prescriptions]  [Labs]  [Documents]  [Vitals]       │
+│  ────────────  │  ─────────────────────────────────────────────────────────────     │
+│                │                                                                    │
+│  Total Visits  │  TIMELINE VIEW (react-chrono)                                     │
+│  23            │  ┌──────────────────────────────────────────────────────────┐     │
+│                │  │                                                          │     │
+│  Last Visit    │  │  ● 28 Jan 2025 - Follow-up                              │     │
+│  28 Jan 2025   │  │    Chief: BP monitoring                                 │     │
+│                │  │    Dx: Uncontrolled HTN                                 │     │
+│  Next Due      │  │    Rx: Added Amlodipine 5mg                             │     │
+│  11 Feb 2025   │  │    [View Prescription] [View Vitals]                    │     │
+│                │  │                                                          │     │
+│  Outstanding   │  │  ● 14 Jan 2025 - Follow-up                              │     │
+│  ₹0            │  │    Chief: Routine checkup                               │     │
+│                │  │    Dx: HTN controlled, DM controlled                    │     │
+│  ────────────  │  │    Rx: Continue same                                    │     │
+│                │  │    Labs: HbA1c - 6.8%                                   │     │
+│  VITALS TREND  │  │    [View Prescription] [View Lab Report]                │     │
+│  ────────────  │  │                                                          │     │
+│  BP (last 5)   │  │  ● 01 Dec 2024 - New consultation                       │     │
+│  140/90        │  │    Chief: Headache, fatigue                             │     │
+│  138/88        │  │    Dx: Newly diagnosed HTN                              │     │
+│  142/92        │  │    Rx: Telmisartan 40mg started                         │     │
+│  136/86        │  │    Labs: CBC, LFT, KFT, Lipid - all ordered             │     │
+│  134/84 ↓      │  │                                                          │     │
+│                │  │  ● 15 Nov 2024 - Walk-in                                │     │
+│  Weight        │  │    Chief: Fever, cough                                  │     │
+│  72 → 71 kg    │  │    Dx: Viral URTI                                       │     │
+│                │  │    Rx: Symptomatic treatment                            │     │
+│                │  │                                                          │     │
+│                │  └──────────────────────────────────────────────────────────┘     │
+│                │                                                                    │
+│  ────────────  │  ─────────────────────────────────────────────────────────────     │
+│  [+ New Visit] │  Showing 4 of 23 visits  [Load More]  [Export PDF]                │
+│                │                                                                    │
+└────────────────┴────────────────────────────────────────────────────────────────────┘
+```
+
+### Tab Views
+
+**1. Timeline (default)** - Chronological visit history with react-chrono
+
+**2. Prescriptions Tab**
+```
+┌────────────────────────────────────────────────────────────────────────────────────┐
+│  PRESCRIPTIONS (23 total)                                    [Filter] [Export All] │
+├────────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                    │
+│  ┌─────────────────────────────────────────────────────────────────────────────┐  │
+│  │ 28 Jan 2025                                                    [View PDF]   │  │
+│  │ Telmisartan 40mg OD, Amlodipine 5mg OD, Metformin 500mg BD               │  │
+│  │ Follow-up: 14 days                                                         │  │
+│  └─────────────────────────────────────────────────────────────────────────────┘  │
+│                                                                                    │
+│  ┌─────────────────────────────────────────────────────────────────────────────┐  │
+│  │ 14 Jan 2025                                                    [View PDF]   │  │
+│  │ Telmisartan 40mg OD, Metformin 500mg BD                                   │  │
+│  │ Follow-up: 14 days                                                         │  │
+│  └─────────────────────────────────────────────────────────────────────────────┘  │
+│                                                                                    │
+│  ┌─────────────────────────────────────────────────────────────────────────────┐  │
+│  │ 01 Dec 2024                                                    [View PDF]   │  │
+│  │ Telmisartan 40mg OD, Metformin 500mg BD                                   │  │
+│  │ Follow-up: 14 days  |  Labs ordered: CBC, LFT, KFT, Lipid                 │  │
+│  └─────────────────────────────────────────────────────────────────────────────┘  │
+│                                                                                    │
+└────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+**3. Labs Tab**
+```
+┌────────────────────────────────────────────────────────────────────────────────────┐
+│  LAB REPORTS (8 total)                                   [Filter by Test] [Trends] │
+├────────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                    │
+│  ┌──────────────────────────────────────────────────────────────┐                 │
+│  │ 20 Jan 2025 - HbA1c                            [View Report] │                 │
+│  │ Result: 6.8% (Good control)                                  │                 │
+│  │ Lab: Lal PathLabs                                            │                 │
+│  └──────────────────────────────────────────────────────────────┘                 │
+│                                                                                    │
+│  ┌──────────────────────────────────────────────────────────────┐                 │
+│  │ 05 Dec 2024 - Lipid Profile                    [View Report] │                 │
+│  │ Total Cholesterol: 210  |  LDL: 140  |  HDL: 45              │                 │
+│  │ Lab: Thyrocare                                               │                 │
+│  └──────────────────────────────────────────────────────────────┘                 │
+│                                                                                    │
+│  HbA1c TREND:  8.2 → 7.5 → 6.8  📉 (Improving)                                    │
+│                                                                                    │
+└────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+**4. Documents Tab**
+```
+┌────────────────────────────────────────────────────────────────────────────────────┐
+│  DOCUMENTS (12 total)                              [Upload New] [Filter by Type]   │
+├────────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                    │
+│  📄 Lab Reports (8)    📋 Old Prescriptions (2)    🏥 Discharge (1)   📎 Other (1) │
+│                                                                                    │
+│  ┌────────────────────────────────────────────────────────────────────────────┐   │
+│  │ 📄 HbA1c_Report_Jan2025.pdf                    20 Jan 2025   [View] [OCR]  │   │
+│  │ 📄 Lipid_Profile_Dec2024.pdf                   05 Dec 2024   [View] [OCR]  │   │
+│  │ 📋 Previous_Doctor_Prescription.jpg            15 Nov 2024   [View] [OCR]  │   │
+│  │ 🏥 Discharge_Summary_Apollo.pdf                10 Oct 2024   [View] [OCR]  │   │
+│  │ 📎 Insurance_Card.jpg                          01 Jan 2024   [View]        │   │
+│  └────────────────────────────────────────────────────────────────────────────┘   │
+│                                                                                    │
+│  ┌─ DROP FILES HERE ────────────────────────────────────────────────────────┐     │
+│  │                         Drag & drop or click to upload                    │     │
+│  │                         (PDF, JPG, PNG up to 10MB)                        │     │
+│  └───────────────────────────────────────────────────────────────────────────┘     │
+│                                                                                    │
+└────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+**5. Vitals Tab**
+```
+┌────────────────────────────────────────────────────────────────────────────────────┐
+│  VITALS HISTORY                                               [Last 30 days ▼]     │
+├────────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                    │
+│  BLOOD PRESSURE TREND (Recharts graph)                                            │
+│  ┌────────────────────────────────────────────────────────────────────────────┐   │
+│  │    150 ┤                                                                   │   │
+│  │    140 ┤  ●──●                                                             │   │
+│  │    130 ┤       ╲●──●──●                                                    │   │
+│  │    120 ┤              ╲●──●                                                │   │
+│  │    110 ┤                                                                   │   │
+│  │        └────────────────────────────────────────────────────────────────   │   │
+│  │         Dec    Jan 1    Jan 14    Jan 21    Jan 28                         │   │
+│  └────────────────────────────────────────────────────────────────────────────┘   │
+│                                                                                    │
+│  WEIGHT TREND                                                                      │
+│  ┌────────────────────────────────────────────────────────────────────────────┐   │
+│  │    74 ┤  ●                                                                 │   │
+│  │    73 ┤   ╲●                                                               │   │
+│  │    72 ┤     ╲●──●                                                          │   │
+│  │    71 ┤          ╲●                                                        │   │
+│  │        └────────────────────────────────────────────────────────────────   │   │
+│  └────────────────────────────────────────────────────────────────────────────┘   │
+│                                                                                    │
+│  TABLE VIEW:                                                                       │
+│  | Date       | BP      | Pulse | SpO2 | Weight | Recorded By |                  │
+│  |------------|---------|-------|------|--------|-------------|                  │
+│  | 28 Jan     | 138/88  | 78    | 98%  | 71 kg  | Nurse       |                  │
+│  | 14 Jan     | 136/86  | 76    | 99%  | 72 kg  | Nurse       |                  │
+│  | 01 Dec     | 142/92  | 82    | 97%  | 73 kg  | Self        |                  │
+│                                                                                    │
+└────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Navigation Between Views
+
+```
+┌────────────────────────────────────────────────────────────────────────────────┐
+│  SIDEBAR                                                                       │
+├────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                │
+│  📋 Dashboard (3-panel AI view)     ← For active consultations                │
+│                                                                                │
+│  👥 Patients                         ← Search, browse all patients            │
+│     └─ Patient Detail               ← Full EMR view (Timeline, Labs, etc)    │
+│                                                                                │
+│  📊 Analytics                        ← Revenue, patient counts                │
+│                                                                                │
+│  ⚙️ Settings                                                                   │
+│     ├─ Fees                                                                   │
+│     ├─ Availability                                                           │
+│     └─ Profile                                                                │
+│                                                                                │
+└────────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Search Patients Page
+
+```
+┌────────────────────────────────────────────────────────────────────────────────────┐
+│  PATIENTS                                                        [+ New Patient]   │
+├────────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                    │
+│  🔍 [Search by name, phone, UHID...]                      [Filter ▼] [Sort ▼]      │
+│                                                                                    │
+│  ┌────────────────────────────────────────────────────────────────────────────┐   │
+│  │ Rajesh Kumar         55/M    +91 98765 43210    Last: 28 Jan    [View →]   │   │
+│  │ HTN, DM-2            P-2024-001                  Next: 11 Feb              │   │
+│  ├────────────────────────────────────────────────────────────────────────────┤   │
+│  │ Shweta Singh         32/F    +91 87654 32109    Last: 28 Jan    [View →]   │   │
+│  │ New patient          P-2025-042                  Next: --                  │   │
+│  ├────────────────────────────────────────────────────────────────────────────┤   │
+│  │ Abdul Khan           48/M    +91 76543 21098    Last: 27 Jan    [View →]   │   │
+│  │ Post-PCI, HTN        P-2023-156                  Next: 10 Feb              │   │
+│  └────────────────────────────────────────────────────────────────────────────┘   │
+│                                                                                    │
+│  Showing 1-25 of 847 patients                              [← Prev] [Next →]       │
+│                                                                                    │
+└────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Updated File Structure
+
+```
+ui/src/app/
+├── dashboard/page.tsx        # 3-panel AI workflow
+├── patients/
+│   ├── page.tsx              # Patient list/search (NEW)
+│   └── [id]/
+│       ├── page.tsx          # Patient detail - Timeline (NEW)
+│       ├── prescriptions/page.tsx  # Rx history (NEW)
+│       ├── labs/page.tsx     # Lab reports (NEW)
+│       ├── documents/page.tsx # All documents (NEW)
+│       └── vitals/page.tsx   # Vitals charts (NEW)
+├── analytics/page.tsx
+└── settings/...
+```
+
+---
+
 ## Summary
 
 **260,000+ stars of proven code, ~1,250 lines of glue, WhatsApp + Email + App.**
