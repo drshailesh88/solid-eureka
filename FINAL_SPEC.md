@@ -14,8 +14,8 @@
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                                                                             │
-│                         MOLTBOT (Secretary Brain)                           │
-│                              74,000 ⭐                                       │
+│                      AI SECRETARY (LLM-powered)                             │
+│                    Kimi K2.5 / DeepSeek V3 / Qwen                          │
 │                                                                             │
 │            Understands, remembers, drafts, reminds, coordinates             │
 │                                                                             │
@@ -26,10 +26,12 @@
             ▼                       ▼                       ▼
      ┌─────────────┐         ┌─────────────┐         ┌─────────────┐
      │  WhatsApp   │         │    Email    │         │   EMR App   │
-     │  (Moltbot)  │         │ (AgentMail) │         │ (Kiranism+) │
-     │             │         │             │         │             │
-     │  • Patient  │         │  • Patient  │         │  • Doctor   │
-     │  • Doctor   │         │  • Doctor   │         │    only     │
+     │ (Cloud API) │         │  (Resend)   │         │ (Kiranism+) │
+     │  Embedded   │         │             │         │             │
+     │   Signup    │         │  • Rx copy  │         │  • Doctor   │
+     │             │         │  • Records  │         │    only     │
+     │  • Patient  │         │             │         │             │
+     │  • Doctor   │         │             │         │             │
      └─────────────┘         └─────────────┘         └─────────────┘
             │                       │                       │
             └───────────────────────┼───────────────────────┘
@@ -38,7 +40,11 @@
                           ┌─────────────────┐
                           │    SUPABASE     │
                           │   (Database)    │
+                          │    (Pro)        │
                           └─────────────────┘
+
+     Hosted on: VERCEL (Pro, HIPAA BAA)
+     Scales to: 10,000+ doctors automatically
 ```
 
 ---
@@ -1986,6 +1992,185 @@ That's your agentic Practo killer.
 │  └── Configs/types        ~110 lines                                   │
 │                                                                         │
 └─────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Core Principles (Non-Negotiable)
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                                                                                 │
+│  1. ONBOARDING MUST BE STUPID SIMPLE                                           │
+│     • No npm install                                                           │
+│     • No terminal commands                                                     │
+│     • No configuration files                                                   │
+│     • No API keys to copy                                                      │
+│     • No technical knowledge required                                          │
+│     • Sign up like Gmail → Use immediately                                     │
+│                                                                                 │
+│  2. APP MUST RUN 24/7 AT ANY SCALE                                            │
+│     • 100 doctors? Works.                                                      │
+│     • 1,000 doctors? Works.                                                    │
+│     • 10,000 doctors? Works.                                                   │
+│     • No slowdowns, no crashes, no "please wait"                              │
+│                                                                                 │
+│  3. MONEY IS NOT THE CONSTRAINT                                                │
+│     • Use the BEST solution, not the cheapest                                  │
+│     • Pay for reliability over saving pennies                                  │
+│     • Infrastructure cost < losing one customer                                │
+│                                                                                 │
+└─────────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## WhatsApp: Embedded Signup (Official Solution)
+
+**NOT Baileys. NOT QR scanning. Official Meta integration.**
+
+### Doctor Onboarding (3 minutes, zero technical steps)
+
+```
+STEP 1: Go to clinicai.in
+STEP 2: Click "Sign Up"
+STEP 3: Enter phone → OTP → Verified
+STEP 4: Enter clinic name, address, timings, fee
+STEP 5: Click "Connect WhatsApp"
+        → Facebook popup opens
+        → Login with Facebook
+        → Select clinic phone number
+        → Done
+STEP 6: Secretary is live. Test it by messaging the number.
+
+TOTAL TIME: 3 minutes
+TECHNICAL KNOWLEDGE: Zero
+COMMANDS TO RUN: Zero
+THINGS TO INSTALL: Zero
+```
+
+### How Embedded Signup Works
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                                                                                 │
+│  WE REGISTER AS "WHATSAPP TECH PROVIDER" (one-time, takes 2-4 weeks)          │
+│                                                                                 │
+│  After that, EVERY doctor onboards instantly:                                  │
+│                                                                                 │
+│  Doctor clicks "Connect WhatsApp"                                              │
+│         │                                                                       │
+│         ▼                                                                       │
+│  Facebook Embedded Signup popup (like "Login with Google")                     │
+│         │                                                                       │
+│         ▼                                                                       │
+│  Doctor logs in, selects their phone number                                    │
+│         │                                                                       │
+│         ▼                                                                       │
+│  WhatsApp Business Account created automatically                               │
+│         │                                                                       │
+│         ▼                                                                       │
+│  Webhook registered to our server                                              │
+│         │                                                                       │
+│         ▼                                                                       │
+│  Done. All messages now come to us.                                            │
+│                                                                                 │
+│  Doctor can STILL use WhatsApp on their phone (Coexistence mode)              │
+│                                                                                 │
+└─────────────────────────────────────────────────────────────────────────────────┘
+```
+
+### WhatsApp Costs (Paid by Doctor's WhatsApp Account)
+
+| Conversation Type | Cost | When It Happens |
+|-------------------|------|-----------------|
+| Patient messages first | **FREE** | 90% of conversations |
+| Reply within 24 hours | **FREE** | Part of service window |
+| Appointment reminder | ~₹0.90 | Proactive message |
+| Prescription send | ~₹0.90 | Proactive message |
+
+**Typical clinic: ₹200-500/month (most conversations are free)**
+
+### Baileys vs Embedded Signup
+
+| | Baileys (REJECTED) | Embedded Signup (CHOSEN) |
+|--|-------------------|-------------------------|
+| Onboarding | QR code scanning daily | One-click Facebook login |
+| Session management | We handle (complex) | Meta handles (reliable) |
+| Reliability | Sessions break often | 99.9% uptime (Meta SLA) |
+| Legal status | ToS violation ⚠️ | Fully official ✅ |
+| Doctor's phone | Need spare SIM | Use existing number |
+| Coexistence | Can't use WA app | Can still use WA app |
+| Our complexity | High | Low (just webhooks) |
+
+---
+
+## Hosted SaaS Architecture (Auto-Scaling)
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                                                                                 │
+│  EVERYTHING AUTO-SCALES. WE DON'T MANAGE SERVERS.                              │
+│                                                                                 │
+│  ┌─────────────────────────────────────────────────────────────────────────┐   │
+│  │                         VERCEL (Pro)                                    │   │
+│  │                                                                         │   │
+│  │  • Hosts our Next.js app                                               │   │
+│  │  • Auto-scales to millions of requests                                 │   │
+│  │  • HIPAA BAA available                                                 │   │
+│  │  • Edge functions for low latency                                      │   │
+│  │  • We deploy once, they handle traffic                                 │   │
+│  └─────────────────────────────────────────────────────────────────────────┘   │
+│                              │                                                  │
+│         ┌────────────────────┼────────────────────┐                            │
+│         │                    │                    │                            │
+│         ▼                    ▼                    ▼                            │
+│  ┌─────────────┐      ┌─────────────┐      ┌─────────────┐                    │
+│  │  SUPABASE   │      │ KIMI/DEEPSEEK│     │   RESEND    │                    │
+│  │  (Pro)      │      │   (API)     │      │  (Email)    │                    │
+│  │             │      │             │      │             │                    │
+│  │ • Database  │      │ • LLM calls │      │ • Send Rx   │                    │
+│  │ • Auth      │      │ • Hindi AI  │      │ • Receipts  │                    │
+│  │ • Storage   │      │ • Tool use  │      │ • Records   │                    │
+│  │ • Realtime  │      │             │      │             │                    │
+│  │ • Auto-scale│      │ • Auto-scale│      │ • Auto-scale│                    │
+│  └─────────────┘      └─────────────┘      └─────────────┘                    │
+│                              │                                                  │
+│                              ▼                                                  │
+│  ┌─────────────────────────────────────────────────────────────────────────┐   │
+│  │                    META WHATSAPP CLOUD API                              │   │
+│  │                                                                         │   │
+│  │  • Handles all WhatsApp message delivery                               │   │
+│  │  • Handles billions of messages daily (Meta's infrastructure)          │   │
+│  │  • 99.9%+ uptime                                                       │   │
+│  │  • We just receive webhooks and send API calls                         │   │
+│  └─────────────────────────────────────────────────────────────────────────┘   │
+│                                                                                 │
+│  10 doctors = same deployment                                                  │
+│  1,000 doctors = same deployment                                               │
+│  10,000 doctors = same deployment                                              │
+│                                                                                 │
+└─────────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Why This Scales
+
+```
+Each WhatsApp message:
+1. Meta receives it
+2. Meta sends webhook to our Vercel function
+3. Vercel spins up a serverless function (takes 50ms)
+4. Function queries Supabase, calls LLM, gets response
+5. Function sends reply via WhatsApp Cloud API
+6. Function dies
+
+No shared state. No bottleneck. Unlimited concurrency.
+
+Dr. A handling 5 patients ─┐
+Dr. B handling 3 patients ─┼── All at the same time
+Dr. C handling 8 patients ─┤   No problem
+...                        │   Vercel handles it
+Dr. Z handling 4 patients ─┘
 ```
 
 ---
