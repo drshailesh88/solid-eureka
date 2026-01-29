@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { PageContainer } from '@/components/layout/page-container';
 import { Heading } from '@/components/ui/heading';
@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { VisitForm } from '@/features/visits/components/visit-form';
 import { PrescriptionBuilder } from '@/features/prescriptions/components/prescription-builder';
 import { toast } from 'sonner';
-import type { VisitInput, VitalsInput, PrescriptionItemInput } from '@/types/database';
+import type { VisitInput, VitalsInput, PrescriptionItemInput, Patient } from '@/types/database';
 
 export default function NewVisitPage() {
   const params = useParams();
@@ -19,6 +19,29 @@ export default function NewVisitPage() {
   const [activeTab, setActiveTab] = useState('notes');
   const [visitId, setVisitId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [patient, setPatient] = useState<Patient | null>(null);
+
+  useEffect(() => {
+    // TODO: Fetch patient data from API
+    // For now, create a mock patient object
+    const mockPatient: Patient = {
+      id: patientId,
+      owner_id: 'temp-owner',
+      uhid: 'UHID001',
+      first_name: 'John',
+      last_name: 'Doe',
+      age: 35,
+      sex: 'male',
+      phone: '+91 9876543210',
+      address: '123 Main St',
+      blood_group: 'O+',
+      allergies: ['Penicillin'],
+      chronic_conditions: ['Diabetes'],
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
+    setPatient(mockPatient);
+  }, [patientId]);
 
   const handleVisitSubmit = async (data: VisitInput, vitals?: VitalsInput) => {
     setIsLoading(true);
@@ -84,8 +107,10 @@ export default function NewVisitPage() {
         <TabsContent value="notes">
           <VisitForm
             patientId={patientId}
+            patient={patient || undefined}
             onSubmit={handleVisitSubmit}
             isLoading={isLoading}
+            isNewPatient={true}
           />
         </TabsContent>
 

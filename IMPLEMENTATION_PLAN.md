@@ -13,137 +13,137 @@
 ## P0: CRITICAL - Patient Safety (Allergies Can Kill)
 
 ### Task 1: Add Patient Safety Fields to Database
-- [ ] Add migration: `allergies TEXT[]`, `chronic_conditions TEXT[]`, `blood_group TEXT` to patients table
-- [ ] Update Supabase schema.sql
-- [ ] Verify RLS policies still work
+- [x] Add migration: `allergies TEXT[]`, `chronic_conditions TEXT[]`, `blood_group TEXT` to patients table
+- [x] Update Supabase schema.sql
+- [x] Verify RLS policies still work
 
 ### Task 2: Update Patient Types
-- [ ] Add new fields to `src/types/index.ts` Patient interface
-- [ ] Update patient form schema (Zod)
+- [x] Add new fields to `src/types/index.ts` Patient interface
+- [x] Update patient form schema (Zod)
 
 ### Task 3: Update Patient Form
-- [ ] Add allergies input (tag/chip input for multiple)
-- [ ] Add chronic conditions input (tag/chip input)
-- [ ] Add blood group dropdown (A+, A-, B+, B-, AB+, AB-, O+, O-)
+- [x] Add allergies input (tag/chip input for multiple)
+- [x] Add chronic conditions input (tag/chip input)
+- [x] Add blood group dropdown (A+, A-, B+, B-, AB+, AB-, O+, O-)
 
 ### Task 4: Create Allergy Warning Banner
-- [ ] Create `AllergyBanner` component (red, prominent)
-- [ ] Display on patient detail page
-- [ ] Display on visit page when patient has allergies
+- [x] Create `AllergyBanner` component (red, prominent)
+- [x] Display on patient detail page
+- [x] Display on visit page when patient has allergies
 
 ### Task 5: Display Chronic Conditions
-- [ ] Create badges for chronic conditions
-- [ ] Display on patient card
-- [ ] Display on visit page
+- [x] Create badges for chronic conditions
+- [x] Display on patient card
+- [x] Display on visit page
 
 ---
 
 ## P1: HIGH - Payments System
 
 ### Task 6: Install UPI Library
-- [ ] Run `npm install upiqr`
-- [ ] Verify installation
+- [x] Run `npm install upiqr`
+- [x] Verify installation
 
 ### Task 7: Create Payment Database Schema
-- [ ] Add `fee_schedule` table migration
-- [ ] Add `payments` table migration
-- [ ] Create get_next_receipt_number function
-- [ ] Enable RLS on both tables
+- [x] Add `fee_schedule` table migration
+- [x] Add `payments` table migration
+- [x] Create get_next_receipt_number function
+- [x] Enable RLS on both tables
 
 ### Task 8: Create Payment Types
-- [ ] Add Payment interface to types
-- [ ] Add FeeSchedule interface
-- [ ] Add PaymentMethod enum (cash, upi, card, pending)
-- [ ] Add PaymentStatus enum (pending, paid, waived)
+- [x] Add Payment interface to types
+- [x] Add FeeSchedule interface
+- [x] Add PaymentMethod enum (cash, upi, card, pending)
+- [x] Add PaymentStatus enum (pending, paid, waived)
 
 ### Task 9: Create Payment API
-- [ ] Create `src/features/payments/api/payments.ts`
-- [ ] createPayment function
-- [ ] getPaymentsByDate function
-- [ ] getDailyCollection function
-- [ ] updatePaymentStatus function
+- [x] Create `src/features/payments/api/payments.ts`
+- [x] createPayment function
+- [x] getPaymentsByDate function
+- [x] getDailyCollection function
+- [x] updatePaymentStatus function
 
 ### Task 10: Create Fee Schedule Settings
-- [ ] Create `FeeScheduleSettings` component
-- [ ] Allow setting consultation fee (new patient)
-- [ ] Allow setting follow-up fee
-- [ ] Save to fee_schedule table
+- [x] Create `FeeScheduleSettings` component
+- [x] Allow setting consultation fee (new patient)
+- [x] Allow setting follow-up fee
+- [x] Save to fee_schedule table
 
 ### Task 11: Create UPI QR Component
-- [ ] Create `UPIQRCode` component using `upiqr`
-- [ ] Accept amount, patient name, doctor UPI ID
-- [ ] Display QR code with amount shown
-- [ ] Copy UPI link button
+- [x] Create `UPIQRCode` component using `upiqr`
+- [x] Accept amount, patient name, doctor UPI ID
+- [x] Display QR code with amount shown
+- [x] Copy UPI link button
 
 ### Task 12: Create Payment Form
-- [ ] Create `PaymentForm` component
-- [ ] Quick buttons: Cash, UPI, Waive
-- [ ] Amount input (pre-filled from fee schedule)
-- [ ] UPI reference input (when UPI selected)
-- [ ] Show UPI QR when UPI selected
-- [ ] Generate receipt number on save
+- [x] Create `PaymentForm` component
+- [x] Quick buttons: Cash, UPI, Waive
+- [x] Amount input (pre-filled from fee schedule)
+- [x] UPI reference input (when UPI selected)
+- [x] Show UPI QR when UPI selected
+- [x] Generate receipt number on save
 
 ### Task 13: Create Payment Badge
-- [ ] Create `PaymentBadge` component
-- [ ] Show PAID (green), PENDING (yellow), WAIVED (gray)
+- [x] Create `PaymentBadge` component
+- [x] Show PAID (green), PENDING (yellow), WAIVED (gray)
 
 ### Task 14: Create Daily Collection Card
-- [ ] Create `DailyCollectionCard` component
-- [ ] Show total collected today
-- [ ] Breakdown: Cash / UPI / Card
-- [ ] Count of pending payments
-- [ ] Place in dashboard header
+- [x] Create `DailyCollectionCard` component
+- [x] Show total collected today
+- [x] Breakdown: Cash / UPI / Card
+- [x] Count of pending payments
+- [x] Place in dashboard header
 
 ### Task 15: Add Payment to Visit Flow
-- [ ] Add payment section to visit page
-- [ ] Show payment status badge
-- [ ] Quick collect button
-- [ ] Link payment to encounter
+- [x] Add payment section to visit page
+- [x] Show payment status badge
+- [x] Quick collect button
+- [x] Link payment to encounter
 
 ---
 
 ## P2: HIGH - Queue & Token System
 
 ### Task 16: Create Queue Database Schema
-- [ ] Add `queue` table migration
-- [ ] Create `get_next_token` function
-- [ ] Add unique constraint (date, token_number)
-- [ ] Enable RLS
+- [x] Add `queue` table migration
+- [x] Create `get_next_token` function
+- [x] Add unique constraint (date, token_number)
+- [x] Enable RLS
 
 ### Task 17: Create Queue Types
-- [ ] Add QueueEntry interface
-- [ ] Add QueueStatus enum (waiting, in_progress, done, no_show)
-- [ ] Add QueueType enum (scheduled, walk_in)
+- [x] Add QueueEntry interface
+- [x] Add QueueStatus enum (waiting, in_progress, done, no_show)
+- [x] Add QueueType enum (scheduled, walk_in)
 
 ### Task 18: Create Queue API
-- [ ] Create `src/features/queue/api/queue.ts`
-- [ ] addToQueue function (with auto token)
-- [ ] getTodaysQueue function
-- [ ] updateQueueStatus function
-- [ ] callNextPatient function
-- [ ] reorderQueue function
+- [x] Create `src/features/queue/api/queue.ts`
+- [x] addToQueue function (with auto token)
+- [x] getTodaysQueue function
+- [x] updateQueueStatus function
+- [x] callNextPatient function
+- [x] reorderQueue function
 
 ### Task 19: Create Queue Panel Component
-- [ ] Create `QueuePanel` component
-- [ ] List today's queue entries
-- [ ] Show token number prominently
-- [ ] Show patient name
-- [ ] Show status badge (WAITING / IN ROOM / DONE)
-- [ ] Show type badge (SCHEDULED / WALK-IN)
+- [x] Create `QueuePanel` component
+- [x] List today's queue entries
+- [x] Show token number prominently
+- [x] Show patient name
+- [x] Show status badge (WAITING / IN ROOM / DONE)
+- [x] Show type badge (SCHEDULED / WALK-IN)
 
 ### Task 20: Create Queue Item Component
-- [ ] Create `QueueItem` component
-- [ ] Display token, name, status, type
-- [ ] Payment status indicator
-- [ ] Vitals status indicator
-- [ ] Click to open patient
+- [x] Create `QueueItem` component
+- [x] Display token, name, status, type
+- [x] Payment status indicator
+- [x] Vitals status indicator
+- [x] Click to open patient
 
 ### Task 21: Create Add Walk-In Flow
-- [ ] Create `AddWalkInDialog` component
-- [ ] Patient search/select
-- [ ] Create new patient option
-- [ ] Assign next token automatically
-- [ ] Add to queue
+- [x] Create `AddWalkInDialog` component
+- [x] Patient search/select
+- [x] Create new patient option
+- [x] Assign next token automatically
+- [x] Add to queue
 
 ### Task 22: Create Check-In Flow
 - [ ] Create `CheckInDialog` component
@@ -152,15 +152,15 @@
 - [ ] Update queue status
 
 ### Task 23: Create Call Next Button
-- [ ] Create `CallNextButton` component
-- [ ] Get next waiting patient
-- [ ] Update status to in_progress
-- [ ] Show patient info
+- [x] Create `CallNextButton` component
+- [x] Get next waiting patient
+- [x] Update status to in_progress
+- [x] Show patient info
 
 ### Task 24: Create Queue Stats
-- [ ] Create `QueueStats` component
-- [ ] Today: X seen, Y waiting
-- [ ] Average wait time (optional)
+- [x] Create `QueueStats` component
+- [x] Today: X seen, Y waiting
+- [x] Average wait time (optional)
 
 ### Task 25: Add Queue to Dashboard
 - [ ] Add QueuePanel to dashboard layout
@@ -193,11 +193,11 @@
 
 | Phase | Total | Done | Remaining |
 |-------|-------|------|-----------|
-| P0 | 5 | 0 | 5 |
-| P1 | 10 | 0 | 10 |
-| P2 | 11 | 0 | 11 |
+| P0 | 5 | 5 | 0 |
+| P1 | 10 | 10 | 0 |
+| P2 | 11 | 8 | 3 |
 | P3 | 2 | 0 | 2 |
-| **TOTAL** | **28** | **0** | **28** |
+| **TOTAL** | **28** | **23** | **5** |
 
 ---
 

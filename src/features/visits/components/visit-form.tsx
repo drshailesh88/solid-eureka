@@ -16,7 +16,8 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
 import { VitalsForm } from './vitals-form';
-import type { Visit, VisitInput, VitalsInput } from '@/types/database';
+import { VisitPaymentSection } from '@/features/payments';
+import type { Visit, VisitInput, VitalsInput, Patient } from '@/types/database';
 import { useState } from 'react';
 
 const visitSchema = z.object({
@@ -33,16 +34,20 @@ type VisitFormValues = z.infer<typeof visitSchema>;
 
 interface VisitFormProps {
   patientId: string;
+  patient?: Patient;
   visit?: Visit;
   onSubmit: (data: VisitInput, vitals?: VitalsInput) => Promise<void>;
   isLoading?: boolean;
+  isNewPatient?: boolean;
 }
 
 export function VisitForm({
   patientId,
+  patient,
   visit,
   onSubmit,
-  isLoading
+  isLoading,
+  isNewPatient = true
 }: VisitFormProps) {
   const [vitals, setVitals] = useState<VitalsInput>({});
 
@@ -212,6 +217,16 @@ export function VisitForm({
             />
           </CardContent>
         </Card>
+
+        {/* Payment Section */}
+        {patient && (
+          <VisitPaymentSection
+            patient={patient}
+            encounterId={visit?.id}
+            isNewPatient={isNewPatient}
+            isEditable={true}
+          />
+        )}
 
         <div className="flex justify-end gap-4">
           <Button type="button" variant="outline">
