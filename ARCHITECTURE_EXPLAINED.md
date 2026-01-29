@@ -218,31 +218,26 @@ PATIENT                          DOCTOR
 
 ---
 
-## The One Risk: WhatsApp ToS
+## WhatsApp Strategy (DECIDED)
 
-**The Problem:**
-MoltBot uses **Baileys** library for WhatsApp. Baileys is:
-- Unofficial (reverse-engineered WhatsApp Web)
-- Violates WhatsApp Terms of Service
-- Risk: WhatsApp could ban the number
+### Phase 1: MVP/POC → MoltBot's Baileys (Now)
+- Use MoltBot's built-in WhatsApp - it works today
+- No modifications needed
+- Test with your own number
+- **Goal:** Prove the concept works
 
-**Two Options:**
+### Phase 2: Production → Meta Official API (Later)
+- Switch to Meta Cloud API (official, compliant)
+- Embedded Signup for doctor onboarding
+- Costs ~₹0.50 per business message
+- **Goal:** Safe for real doctors and patients
 
-### Option A: Keep Baileys (MoltBot default)
-- **Pro:** Already built, works today
-- **Pro:** Free (no per-message cost)
-- **Con:** ToS violation
-- **Con:** Number could get banned
-- **Risk Level:** MEDIUM-HIGH
+### Phase 3: Strip MoltBot → After Everything Works
+- Remove dangerous modules (shell, browser)
+- Only after WhatsApp + EMR + Database all work
+- **Goal:** Production-safe, minimal attack surface
 
-### Option B: Replace with Meta Cloud API (Official)
-- **Pro:** Official, ToS compliant
-- **Pro:** Embedded Signup (easy onboarding)
-- **Con:** Costs money (~₹0.50 per business message)
-- **Con:** Need to modify MoltBot's WhatsApp module
-- **Risk Level:** LOW
-
-**Recommendation:** Start with Baileys for testing (it's built-in). If you get traction with real doctors, migrate to official API.
+**Decision:** We will ONLY use Meta Official API for production. Baileys is just for testing.
 
 ---
 
@@ -266,11 +261,11 @@ MoltBot uses **Baileys** library for WhatsApp. Baileys is:
 - Set up Supabase
 - Test patient/visit/prescription flow
 
-### Phase 2: Fork MoltBot (Next)
-- Fork the repo
-- Delete dangerous modules
-- Keep WhatsApp/memory/cron
-- Test basic WhatsApp flow
+### Phase 2: Set Up MoltBot (Next)
+- Clone MoltBot repo (don't strip yet - keep everything working)
+- Configure WhatsApp with your test number
+- Test basic WhatsApp send/receive
+- **DO NOT strip dangerous modules yet** - do that last
 
 ### Phase 3: Add Medical Tools
 - `find_patient` - look up patient by phone
@@ -284,9 +279,10 @@ MoltBot uses **Baileys** library for WhatsApp. Baileys is:
 - EMR shows pending messages from MoltBot
 - Doctor approves, MoltBot sends
 
-### Phase 5: Multi-tenant
-- Each doctor gets their own WhatsApp number
-- Database isolation (RLS)
+### Phase 5: Production Ready
+- Switch WhatsApp from Baileys → Meta Official API
+- Strip dangerous MoltBot modules (shell, browser)
+- Multi-tenant (each doctor gets own WhatsApp)
 - Onboarding flow
 
 ---
