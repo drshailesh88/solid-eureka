@@ -1,4 +1,4 @@
-# What Are We Building? - A Clear Explanation
+# What Are We Building? - A Clear Explanation (CORRECTED)
 
 ## The Vision (In Simple Terms)
 
@@ -12,215 +12,329 @@ Think of it as: **HealthPlix + WhatsApp Bot + AI Assistant**
 
 ---
 
-## The Two Apps
-
-### App 1: Casefold EMR (The Doctor's Screen)
-**What it does:** Doctor opens browser → sees patients → writes prescriptions → generates PDF
-
-### App 2: AI Clinical Coordinator (The Patient's WhatsApp)
-**What it does:** Patient sends WhatsApp → AI responds → books appointment → reminds for follow-up
-
-**They share the same database.** When AI books an appointment, doctor sees it. When doctor writes prescription, AI can reference it.
-
----
-
-## Where Each Piece Comes From
-
-### PROVEN REPOS (High GitHub Stars = Battle-Tested)
-
-| Component | Source | Stars | What It Gives Us |
-|-----------|--------|-------|------------------|
-| **Dashboard UI** | [Kiranism/next-shadcn-dashboard-starter](https://github.com/Kiranism/next-shadcn-dashboard-starter) | 5,900+ | Login, sidebar, tables, forms, charts - everything for doctor's screen |
-| **UI Components** | [shadcn/ui](https://ui.shadcn.com/) | 80,000+ | Buttons, modals, dropdowns - looks professional |
-| **Authentication** | [Clerk](https://clerk.com/) | N/A (SaaS) | Login, signup, Google sign-in - no custom code |
-| **Database** | [Supabase](https://supabase.com/) | 75,000+ | PostgreSQL with security built-in |
-| **PDF Generation** | [@react-pdf/renderer](https://react-pdf.org/) | 15,000+ | Prescription PDFs |
-| **Timeline View** | [react-chrono](https://github.com/prabhuignoto/react-chrono) | 4,000+ | Patient history timeline |
-| **Rich Text Editor** | [Tiptap](https://tiptap.dev/) | 28,000+ | For notes and prescriptions |
-| **Data Tables** | [TanStack Table](https://tanstack.com/table) | 25,000+ | Patient lists, search, sort |
-| **Charts** | [Recharts](https://recharts.org/) | 24,000+ | Vitals graphs, analytics |
-
-### CUSTOM CODE (What We Write)
-
-| Component | Why Custom? | Risk Level |
-|-----------|-------------|------------|
-| **Database Schema** | Your specific tables (patients, visits, prescriptions) | Low - just SQL |
-| **Hindi Templates** | Prescription templates in Hindi | Low - just text |
-| **API Glue Code** | Connect Supabase to UI | Low - standard patterns |
-| **WhatsApp Webhook** | Receive messages from Meta | Medium - needs testing |
-| **AI Prompts** | How AI talks to patients | Medium - needs tuning |
-
-### NOT YET DECIDED (WhatsApp Layer)
-
-| Component | Options | Status |
-|-----------|---------|--------|
-| **WhatsApp API** | Meta Cloud API (Official) | Decided - safe, compliant |
-| **WhatsApp Bot Framework** | Need to pick one | **NOT DECIDED** |
-| **AI/LLM** | Kimi K2.5 / DeepSeek V3 | Decided - cheap, good enough |
-
----
-
-## The Stitching Diagram
+## The Three Main Pieces
 
 ```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                         YOUR PRODUCT                                     │
-│                   "AI Clinical Coordinator"                              │
-└─────────────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                           YOUR PRODUCT                                        │
+│                    "AI Clinical Coordinator"                                  │
+└──────────────────────────────────────────────────────────────────────────────┘
                                     │
-                    ┌───────────────┼───────────────┐
-                    │               │               │
-                    ▼               ▼               ▼
-┌─────────────────────┐  ┌─────────────────┐  ┌─────────────────────┐
-│   DOCTOR'S SCREEN   │  │    DATABASE     │  │  PATIENT WHATSAPP   │
-│   (Casefold EMR)    │  │   (Supabase)    │  │  (AI Coordinator)   │
-└─────────────────────┘  └─────────────────┘  └─────────────────────┘
-         │                       │                      │
-         │                       │                      │
-    ┌────┴────┐            ┌─────┴─────┐          ┌────┴────┐
-    │ PROVEN  │            │  PROVEN   │          │  MIXED  │
-    └────┬────┘            └─────┬─────┘          └────┬────┘
-         │                       │                      │
-         ▼                       ▼                      ▼
-┌─────────────────┐      ┌─────────────┐      ┌─────────────────┐
-│ Kiranism Starter│      │  Supabase   │      │ Meta Cloud API  │ ← Proven
-│ shadcn/ui       │      │  PostgreSQL │      │ (Official)      │
-│ Clerk Auth      │      │  Row-Level  │      ├─────────────────┤
-│ TanStack Table  │      │  Security   │      │ Bot Framework   │ ← NOT PICKED
-│ Recharts        │      │             │      │ (TBD)           │
-│ react-pdf       │      │             │      ├─────────────────┤
-│ Tiptap          │      │             │      │ LLM (Kimi/      │ ← Proven API
-│ react-chrono    │      │             │      │ DeepSeek)       │
-└─────────────────┘      └─────────────┘      └─────────────────┘
-     ALL PROVEN            ALL PROVEN           PARTIALLY PROVEN
+          ┌─────────────────────────┼─────────────────────────┐
+          │                         │                         │
+          ▼                         ▼                         ▼
+┌──────────────────┐     ┌──────────────────┐     ┌──────────────────┐
+│                  │     │                  │     │                  │
+│   MOLTBOT        │     │   CASEFOLD EMR   │     │   SUPABASE       │
+│   (AI Brain)     │     │   (Doctor UI)    │     │   (Database)     │
+│                  │     │                  │     │                  │
+│   74,000 ⭐       │     │   5,900 ⭐ base   │     │   75,000 ⭐       │
+│                  │     │                  │     │                  │
+└──────────────────┘     └──────────────────┘     └──────────────────┘
+         │                        │                        │
+         │                        │                        │
+         └────────────────────────┴────────────────────────┘
+                                  │
+                                  ▼
+                        SHARED DATABASE
+                        (All three read/write here)
 ```
+
+---
+
+## Piece 1: MOLTBOT (The AI Brain) - 74,000 Stars
+
+**What is MoltBot?**
+An open-source AI agent framework. Think of it as a ready-made "brain" that can:
+- **Talk on WhatsApp** (built-in via Baileys library)
+- **Remember conversations** (memory system with embeddings)
+- **Schedule tasks** (cron system for reminders)
+- **Call tools** (look up patient, create task, draft message)
+- **Use any LLM** (GPT, Claude, Kimi, DeepSeek)
+
+**Why MoltBot instead of building from scratch?**
+
+| If We Build From Scratch | If We Use MoltBot |
+|--------------------------|-------------------|
+| Write WhatsApp connection code | Already built |
+| Build memory system | Already built (73KB manager) |
+| Build scheduling/cron | Already built |
+| Build tool calling framework | Already built |
+| ~10,000 lines of code | ~500 lines of config |
+| 3+ months work | 2-3 weeks work |
+
+**What we do with MoltBot:**
+1. **Fork it** (copy the code)
+2. **Strip dangerous stuff** (shell commands, browser automation)
+3. **Keep good stuff** (WhatsApp, memory, cron, tools)
+4. **Add medical tools** (find_patient, draft_message, triage)
+5. **Connect to Supabase** (our database)
+
+**Files to REMOVE from MoltBot (dangerous):**
+```
+src/browser/           # Can browse web - REMOVE
+src/terminal/          # Can run shell commands - REMOVE
+src/agents/bash-*      # Can execute code - REMOVE
+apps/                  # Mobile apps - REMOVE (not needed)
+```
+
+**Files to KEEP from MoltBot (useful):**
+```
+src/gateway/           # API server - KEEP
+src/memory/            # Conversation memory - KEEP
+src/cron/              # Scheduling - KEEP
+extensions/whatsapp/   # WhatsApp via Baileys - KEEP
+skills/summarize/      # Text summarization - KEEP
+skills/openai-whisper/ # Voice transcription - KEEP
+```
+
+---
+
+## Piece 2: CASEFOLD EMR (Doctor's Screen) - Built on 5,900 Star Starter
+
+**What is it?**
+A web app where the doctor:
+- Sees patient list
+- Writes prescriptions
+- Generates PDFs
+- Views patient history
+- Talks to AI secretary (chat panel)
+
+**Where does it come from?**
+
+| Component | Source | Stars | Custom? |
+|-----------|--------|-------|---------|
+| Dashboard layout | Kiranism/next-shadcn-dashboard-starter | 5,900 | No |
+| Buttons, forms | shadcn/ui | 80,000 | No |
+| Login/signup | Clerk | SaaS | No |
+| Data tables | TanStack Table | 25,000 | No |
+| PDF generation | react-pdf | 15,000 | No |
+| Timeline | react-chrono | 4,000 | No |
+| Charts | Recharts | 24,000 | No |
+| Rich text editor | Tiptap | 28,000 | No |
+| Patient/Visit logic | Custom | - | **Yes** |
+| Hindi templates | Custom | - | **Yes** |
+
+**Status:** 90% BUILT. Code exists in `/home/user/casefold-analysis/emr-app/`
+
+---
+
+## Piece 3: SUPABASE (The Database) - 75,000 Stars
+
+**What is it?**
+A hosted PostgreSQL database with:
+- Row-Level Security (each doctor sees only their patients)
+- Realtime subscriptions (UI updates when data changes)
+- Storage (for PDFs, images)
+- Auth (backup to Clerk)
+
+**Why not just use any database?**
+- Security built-in (RLS)
+- Scales automatically
+- Mumbai region (fast for India)
+- Free tier for testing
+
+---
+
+## How They Connect
+
+```
+PATIENT                          DOCTOR
+   │                                │
+   │ WhatsApp message               │ Opens browser
+   │                                │
+   ▼                                ▼
+┌──────────────────┐         ┌──────────────────┐
+│                  │         │                  │
+│    MOLTBOT       │         │   CASEFOLD EMR   │
+│    (AI Brain)    │         │   (Web UI)       │
+│                  │         │                  │
+│  • Receives msg  │         │  • Shows queue   │
+│  • Looks up pt   │         │  • Write Rx      │
+│  • Drafts reply  │         │  • Approve msgs  │
+│  • Waits for OK  │         │  • Sign Rx       │
+│                  │         │                  │
+└────────┬─────────┘         └────────┬─────────┘
+         │                            │
+         │      ┌────────────┐        │
+         └─────▶│  SUPABASE  │◀───────┘
+                │ (Database) │
+                │            │
+                │ • patients │
+                │ • visits   │
+                │ • Rx       │
+                │ • messages │
+                │ • tasks    │
+                └────────────┘
+```
+
+**Example Flow:**
+1. Patient sends WhatsApp: "Doctor, I need BP medicine refill"
+2. MoltBot receives message
+3. MoltBot looks up patient in Supabase → finds last prescription
+4. MoltBot drafts reply: "Rajesh ji, aapka last Rx: Telmisartan 40mg. Same chahiye?"
+5. MoltBot saves draft to `message_drafts` table (status: pending)
+6. Doctor sees pending message in Casefold EMR
+7. Doctor clicks "Approve"
+8. MoltBot sends the WhatsApp reply
+
+**Key point:** AI drafts, Doctor approves. AI never sends clinical messages on its own.
+
+---
+
+## Where Each Piece Comes From (Complete Picture)
+
+### PROVEN REPOS (We use as-is or with minor changes)
+
+| Component | Repo | Stars | What It Does |
+|-----------|------|-------|--------------|
+| **AI Brain** | [moltbot/moltbot](https://github.com/moltbot/moltbot) | 74,000 | Agent runtime, memory, cron, WhatsApp |
+| **Dashboard Base** | [Kiranism/next-shadcn-dashboard-starter](https://github.com/Kiranism/next-shadcn-dashboard-starter) | 5,900 | Layout, sidebar, tables, auth |
+| **UI Components** | [shadcn/ui](https://ui.shadcn.com/) | 80,000 | Buttons, forms, modals |
+| **Database** | [Supabase](https://supabase.com/) | 75,000 | PostgreSQL + Auth + Storage |
+| **Auth** | [Clerk](https://clerk.com/) | SaaS | Login, signup, SSO |
+| **PDF** | [react-pdf](https://react-pdf.org/) | 15,000 | Prescription PDFs |
+| **Timeline** | [react-chrono](https://github.com/prabhuignoto/react-chrono) | 4,000 | Patient history |
+| **Charts** | [Recharts](https://recharts.org/) | 24,000 | Vitals graphs |
+| **Tables** | [TanStack Table](https://tanstack.com/table) | 25,000 | Patient lists |
+| **Rich Text** | [Tiptap](https://tiptap.dev/) | 28,000 | Notes editor |
+| **Voice** | [Whisper](https://github.com/openai/whisper) | 75,000 | Voice to text |
+| **OCR** | Azure Computer Vision | SaaS | Read old reports |
+
+**Total proven code: ~360,000+ stars**
+
+### CUSTOM CODE (What we write)
+
+| Component | Lines | Risk |
+|-----------|-------|------|
+| Database schema (SQL) | ~200 | Low |
+| Medical tools for MoltBot | ~500 | Medium |
+| Glue code (API routes) | ~1000 | Low |
+| Hindi Rx templates | ~300 | Low |
+| AI prompts | ~200 | Medium |
+| MoltBot config | ~100 | Low |
+
+**Total custom code: ~2,300 lines (~5% of total)**
+
+---
+
+## The One Risk: WhatsApp ToS
+
+**The Problem:**
+MoltBot uses **Baileys** library for WhatsApp. Baileys is:
+- Unofficial (reverse-engineered WhatsApp Web)
+- Violates WhatsApp Terms of Service
+- Risk: WhatsApp could ban the number
+
+**Two Options:**
+
+### Option A: Keep Baileys (MoltBot default)
+- **Pro:** Already built, works today
+- **Pro:** Free (no per-message cost)
+- **Con:** ToS violation
+- **Con:** Number could get banned
+- **Risk Level:** MEDIUM-HIGH
+
+### Option B: Replace with Meta Cloud API (Official)
+- **Pro:** Official, ToS compliant
+- **Pro:** Embedded Signup (easy onboarding)
+- **Con:** Costs money (~₹0.50 per business message)
+- **Con:** Need to modify MoltBot's WhatsApp module
+- **Risk Level:** LOW
+
+**Recommendation:** Start with Baileys for testing (it's built-in). If you get traction with real doctors, migrate to official API.
 
 ---
 
 ## What's Built vs What's Not
 
-### CASEFOLD EMR (Doctor's Screen) - 90% BUILT
-
-| Feature | Status | Source |
-|---------|--------|--------|
-| Login/Signup | ✅ Built | Clerk (proven) |
-| Dashboard Layout | ✅ Built | Kiranism starter (proven) |
-| Patient List | ✅ Built | Custom + TanStack Table |
-| Patient Create/Edit | ✅ Built | Custom + shadcn forms |
-| Visit Recording | ✅ Built | Custom |
-| Prescription Builder | ✅ Built | Custom + Tiptap |
-| PDF Generation | ✅ Built | react-pdf (proven) |
-| Document Upload | ✅ Built | Custom + Supabase storage |
-| OCR (Read Documents) | ✅ Built | Azure API (proven) |
-| Timeline View | ✅ Built | react-chrono (proven) |
-| Vitals Charts | ✅ Built | Recharts (proven) |
-| Database Schema | ✅ Built | Custom SQL |
-| Hindi Templates | ✅ Built | Custom text |
-
-**Custom Code in EMR:** ~20% (glue code, schemas, templates)
-**Proven Repos in EMR:** ~80%
-
-### AI CLINICAL COORDINATOR (WhatsApp) - 0% BUILT
-
-| Feature | Status | Source |
-|---------|--------|--------|
-| WhatsApp Connection | ❌ Not Built | Meta Cloud API (proven) |
-| Message Handling | ❌ Not Built | **NEED TO PICK FRAMEWORK** |
-| AI Responses | ❌ Not Built | Kimi/DeepSeek API (proven) |
-| Appointment Booking | ❌ Not Built | Custom logic |
-| Reminder System | ❌ Not Built | Custom + cron jobs |
-| Multi-tenant (many doctors) | ❌ Not Built | Custom architecture |
-
-**This is 100% not built yet. Only specifications exist.**
+| Component | Status | Location |
+|-----------|--------|----------|
+| Casefold EMR (Doctor UI) | ✅ 90% Built | `/home/user/casefold-analysis/emr-app/` |
+| Database Schema | ✅ Built | `emr-app/supabase/schema.sql` |
+| MoltBot Fork | ❌ Not Started | Need to fork and strip |
+| Medical Tools | ❌ Not Built | Need to add to MoltBot |
+| MoltBot + Supabase Connection | ❌ Not Built | Glue code needed |
+| Multi-tenant (many doctors) | ❌ Not Built | Architecture planned |
 
 ---
 
-## The Gap: WhatsApp Bot Framework
+## Work Remaining
 
-This is the **one piece we haven't decided**:
+### Phase 1: Test EMR (Now)
+- Install dependencies ✅ Done
+- Set up Supabase
+- Test patient/visit/prescription flow
 
-### Option A: Build from Scratch
-- Use Meta's raw webhook API
-- Write all message handling ourselves
-- **Risk:** High - lots of custom code
+### Phase 2: Fork MoltBot (Next)
+- Fork the repo
+- Delete dangerous modules
+- Keep WhatsApp/memory/cron
+- Test basic WhatsApp flow
 
-### Option B: Use a Bot Framework
-Candidates:
-| Framework | Stars | Pros | Cons |
-|-----------|-------|------|------|
-| [Botpress](https://github.com/botpress/botpress) | 13,000+ | Visual builder, proven | Complex, might be overkill |
-| [whatsapp-web.js](https://github.com/pedroslopez/whatsapp-web.js) | 16,000+ | Popular | Unofficial API - **ToS RISK** |
-| [Baileys](https://github.com/WhiskeySockets/Baileys) | 4,000+ | Lightweight | Unofficial API - **ToS RISK** |
-| Custom on Meta API | N/A | Official, safe | More custom code |
+### Phase 3: Add Medical Tools
+- `find_patient` - look up patient by phone
+- `get_patient_snapshot` - get summary
+- `draft_message` - draft reply (doctor approves)
+- `create_task` - schedule follow-up
+- `triage_message` - classify urgency
 
-### My Recommendation: Custom on Meta Cloud API
-- Official = no ToS risk
-- Embedded Signup = easy onboarding
-- We write ~500 lines of webhook code
-- **Risk:** Medium (but safe legally)
+### Phase 4: Connect Everything
+- MoltBot reads/writes to Supabase
+- EMR shows pending messages from MoltBot
+- Doctor approves, MoltBot sends
 
----
-
-## Risk Assessment
-
-| Component | Risk | Why |
-|-----------|------|-----|
-| Doctor's UI | LOW | 80% proven repos |
-| Database | LOW | Supabase is battle-tested |
-| Authentication | LOW | Clerk handles everything |
-| PDF Generation | LOW | react-pdf is mature |
-| WhatsApp Connection | MEDIUM | Official API but custom code |
-| AI Responses | MEDIUM | Prompt engineering needed |
-| Multi-tenant Scale | MEDIUM | Architecture is sound but untested |
-
-### Why This Might Fail (Honest Assessment)
-
-1. **WhatsApp AI quality** - If AI gives wrong responses, patients lose trust
-2. **Onboarding friction** - If doctors can't connect WhatsApp easily, they leave
-3. **Edge cases** - Hindi/regional languages, voice messages, images
-4. **Scale testing** - We haven't tested with 1000 doctors yet
-
-### Why This Might Succeed
-
-1. **EMR is 90% proven code** - Less bugs
-2. **Simple architecture** - One database, one API, no microservices
-3. **Official APIs only** - No ToS violations
-4. **Cheap LLMs** - Sustainable business model
+### Phase 5: Multi-tenant
+- Each doctor gets their own WhatsApp number
+- Database isolation (RLS)
+- Onboarding flow
 
 ---
 
-## Summary: What You're Getting
+## Summary
 
 ```
 YOUR PRODUCT =
-    Kiranism Dashboard (proven)
-  + shadcn/ui Components (proven)
-  + Clerk Auth (proven)
-  + Supabase Database (proven)
-  + react-pdf (proven)
-  + TanStack Table (proven)
-  + Recharts (proven)
-  + Meta WhatsApp API (proven)
-  + Kimi/DeepSeek LLM (proven)
-  + ~2000 lines of custom glue code (our risk)
+
+  MoltBot (74k ⭐)           ← AI brain, WhatsApp, memory, cron
++ Kiranism Starter (5.9k ⭐)  ← Doctor dashboard UI
++ shadcn/ui (80k ⭐)          ← UI components
++ Supabase (75k ⭐)           ← Database
++ Clerk (SaaS)               ← Authentication
++ react-pdf (15k ⭐)          ← PDF generation
++ TanStack Table (25k ⭐)     ← Data tables
++ Recharts (24k ⭐)           ← Charts
++ Tiptap (28k ⭐)             ← Rich text
++ Whisper (75k ⭐)            ← Voice transcription
+─────────────────────────────────────────────
+  ~400,000 stars of proven code
++ ~2,300 lines of custom glue code
 ```
 
-**Proven repos: ~85%**
-**Custom code: ~15%**
+**Proven: 95%**
+**Custom: 5%**
 
-The custom code is:
-- Database schema (low risk)
-- API routes to connect things (low risk)
-- WhatsApp webhook handler (medium risk)
-- AI prompts and logic (medium risk)
+The risk is low because we're stitching proven pieces, not building from scratch.
 
 ---
 
-## What Should We Do Next?
+## Comparison to Your Previous Attempts
 
-1. **Test the EMR** - Make sure doctor's screen works before adding WhatsApp
-2. **Pick WhatsApp approach** - Confirm we go with Meta Cloud API
-3. **Build WhatsApp layer** - This is the main work remaining
-4. **Test with real patients** - Before scaling to many doctors
+| Previous Attempts | This Attempt |
+|-------------------|--------------|
+| Built WhatsApp from scratch | Use MoltBot (74k stars) |
+| Built dashboard from scratch | Use Kiranism (5.9k stars) |
+| Too many moving parts | 3 main pieces (MoltBot + EMR + Supabase) |
+| Never tested | EMR is testable NOW |
+| Forgot what was built | This document explains everything |
 
-Does this make the architecture clear?
+---
+
+## Questions?
+
+The architecture is:
+1. **MoltBot** = AI brain (WhatsApp, memory, cron)
+2. **Casefold EMR** = Doctor's screen (prescriptions, patients)
+3. **Supabase** = Shared database
+
+All three are proven. We write ~5% glue code to connect them.
