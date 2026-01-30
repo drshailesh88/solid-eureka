@@ -1,6 +1,6 @@
 'use client';
 
-import { useAuth, useOrganizationList } from '@clerk/nextjs';
+import { useSafeAuth, useSafeOrganizationList, CLERK_CONFIGURED } from '@/lib/clerk-safe';
 import { Check, ChevronsUpDown, GalleryVerticalEnd, Plus } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -25,14 +25,14 @@ import { useEffect } from 'react';
 export function OrgSwitcher() {
   const { isMobile, state } = useSidebar();
   const router = useRouter();
-  const { isLoaded, setActive, userMemberships } = useOrganizationList({
+  const { isLoaded, setActive, userMemberships } = useSafeOrganizationList({
     userMemberships: {
       infinite: true,
       keepPreviousData: false
     }
   });
 
-  const { orgId } = useAuth();
+  const { orgId } = useSafeAuth() as any;
 
   useEffect(() => {
     console.log('revalidating memberships');

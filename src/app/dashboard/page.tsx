@@ -1,8 +1,13 @@
-import { auth } from '@clerk/nextjs/server';
+import { safeAuth, CLERK_SERVER_CONFIGURED } from '@/lib/clerk-safe-server';
 import { redirect } from 'next/navigation';
 
 export default async function Dashboard() {
-  const { userId } = await auth();
+  // If Clerk is not configured, redirect to overview (for testing/demo)
+  if (!CLERK_SERVER_CONFIGURED) {
+    redirect('/dashboard/overview');
+  }
+
+  const { userId } = await safeAuth();
 
   if (!userId) {
     return redirect('/auth/sign-in');

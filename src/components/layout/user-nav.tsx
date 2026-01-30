@@ -10,10 +10,11 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
 import { UserAvatarProfile } from '@/components/user-avatar-profile';
-import { SignOutButton, useUser } from '@clerk/nextjs';
+import { SignOutButton } from '@clerk/nextjs';
+import { useSafeUser, CLERK_CONFIGURED } from '@/lib/clerk-safe';
 import { useRouter } from 'next/navigation';
 export function UserNav() {
-  const { user } = useUser();
+  const { user } = useSafeUser();
   const router = useRouter();
   if (user) {
     return (
@@ -50,7 +51,11 @@ export function UserNav() {
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem>
-            <SignOutButton redirectUrl='/auth/sign-in' />
+            {CLERK_CONFIGURED ? (
+              <SignOutButton redirectUrl='/auth/sign-in' />
+            ) : (
+              <span>Sign Out</span>
+            )}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

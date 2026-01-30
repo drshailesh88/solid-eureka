@@ -8,12 +8,27 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card';
-import { useOrganization, Protect } from '@clerk/nextjs';
+import { Protect } from '@clerk/nextjs';
+import { useSafeOrganization, CLERK_CONFIGURED } from '@/lib/clerk-safe';
 import { BadgeCheck, Lock } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export default function ExclusivePage() {
-  const { organization, isLoaded } = useOrganization();
+  const { organization, isLoaded } = useSafeOrganization() as any;
+
+  // If Clerk is not configured, show a simple message
+  if (!CLERK_CONFIGURED) {
+    return (
+      <PageContainer>
+        <div className='space-y-6'>
+          <h1 className='text-3xl font-bold'>Exclusive Area</h1>
+          <p className='text-muted-foreground'>
+            This page requires Clerk authentication to be configured.
+          </p>
+        </div>
+      </PageContainer>
+    );
+  }
 
   return (
     <PageContainer isloading={!isLoaded}>

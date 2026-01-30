@@ -31,7 +31,7 @@ import {
 import { UserAvatarProfile } from '@/components/user-avatar-profile';
 import { navItems } from '@/config/nav-config';
 import { useMediaQuery } from '@/hooks/use-media-query';
-import { useOrganization, useUser } from '@clerk/nextjs';
+import { useSafeOrganization, useSafeUser, CLERK_CONFIGURED } from '@/lib/clerk-safe';
 import { useFilteredNavItems } from '@/hooks/use-nav';
 import {
   IconBell,
@@ -51,8 +51,8 @@ import { OrgSwitcher } from '../org-switcher';
 export default function AppSidebar() {
   const pathname = usePathname();
   const { isOpen } = useMediaQuery();
-  const { user } = useUser();
-  const { organization } = useOrganization();
+  const { user } = useSafeUser();
+  const { organization } = useSafeOrganization();
   const router = useRouter();
   const filteredItems = useFilteredNavItems(navItems);
 
@@ -186,7 +186,11 @@ export default function AppSidebar() {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
                   <IconLogout className='mr-2 h-4 w-4' />
-                  <SignOutButton redirectUrl='/auth/sign-in' />
+                  {CLERK_CONFIGURED ? (
+                    <SignOutButton redirectUrl='/auth/sign-in' />
+                  ) : (
+                    <span>Sign Out</span>
+                  )}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

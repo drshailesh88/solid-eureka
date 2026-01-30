@@ -8,14 +8,14 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card';
-import { useOrganization } from '@clerk/nextjs';
 import { PricingTable } from '@clerk/nextjs';
+import { useSafeOrganization, CLERK_CONFIGURED } from '@/lib/clerk-safe';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Info } from 'lucide-react';
 import { billingInfoContent } from '@/config/infoconfig';
 
 export default function BillingPage() {
-  const { organization, isLoaded } = useOrganization();
+  const { organization, isLoaded } = useSafeOrganization() as any;
 
   return (
     <PageContainer
