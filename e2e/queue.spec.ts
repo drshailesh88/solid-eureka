@@ -66,8 +66,9 @@ test.describe('Add Walk-In Dialog', () => {
     if (await addWalkInBtn.isVisible()) {
       await addWalkInBtn.click();
 
-      const searchInput = page.getByPlaceholder(/search.*patient|patient.*name/i);
-      await expect(searchInput).toBeVisible();
+      // Dialog uses a combobox for patient search
+      const searchCombobox = page.getByRole('combobox');
+      await expect(searchCombobox).toBeVisible();
     }
   });
 });

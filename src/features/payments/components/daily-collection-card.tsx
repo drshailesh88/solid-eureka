@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { getDailyCollection } from '../api/payments';
-import type { DailyCollection } from '@/types/database';
+import { getDailyCollection, getPaymentsByDate } from '../api/payments';
+import type { DailyCollection, Payment } from '@/types/database';
 import {
   Banknote,
   Smartphone,
@@ -12,6 +12,7 @@ import {
   IndianRupee
 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ExportCSVButton } from './export-csv-button';
 
 interface DailyCollectionCardProps {
   date?: string;
@@ -31,15 +32,21 @@ export function DailyCollectionCard({
   compact = false
 }: DailyCollectionCardProps) {
   const [collection, setCollection] = useState<DailyCollection | null>(null);
+  const [payments, setPayments] = useState<Payment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  const targetDate = date || new Date().toISOString().split('T')[0];
 
   useEffect(() => {
     const fetchCollection = async () => {
       setIsLoading(true);
       try {
-        const targetDate = date || new Date().toISOString().split('T')[0];
-        const data = await getDailyCollection(targetDate);
-        setCollection(data);
+        const [collectionData, paymentsData] = await Promise.all([
+          getDailyCollection(targetDate),
+          getPaymentsByDate(targetDate)
+        ]);
+        setCollection(collectionData);
+        setPayments(paymentsData);
       } catch (error) {
         console.error('Failed to fetch daily collection:', error);
       } finally {
@@ -48,7 +55,7 @@ export function DailyCollectionCard({
     };
 
     fetchCollection();
-  }, [date]);
+  }, [targetDate]);
 
   if (isLoading) {
     return (
@@ -97,6 +104,12 @@ export function DailyCollectionCard({
                   {collection.pending_count}
                 </span>
               )}
+              <ExportCSVButton
+                payments={payments}
+                date={targetDate}
+                variant="ghost"
+                size="icon"
+              />
             </div>
           </div>
         </CardContent>
@@ -107,9 +120,12 @@ export function DailyCollectionCard({
   return (
     <Card>
       <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground">
-          Today&apos;s Collection
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-sm font-medium text-muted-foreground">
+            Today&apos;s Collection
+          </CardTitle>
+          <ExportCSVButton payments={payments} date={targetDate} />
+        </div>
       </CardHeader>
       <CardContent>
         <div className="text-3xl font-bold text-primary mb-4">

@@ -168,9 +168,9 @@
 - [ ] Real-time updates with Supabase
 
 ### Task 26: Daily Queue Reset
-- [ ] Create function to mark yesterday's incomplete as no_show
-- [ ] Run on first load of day
-- [ ] Or scheduled job
+- [x] Create function to mark yesterday's incomplete as no_show
+- [x] Run on first load of day
+- [x] Or scheduled job
 
 ---
 
@@ -195,9 +195,9 @@
 |-------|-------|------|-----------|
 | P0 | 5 | 5 | 0 |
 | P1 | 10 | 10 | 0 |
-| P2 | 11 | 8 | 3 |
+| P2 | 11 | 9 | 2 |
 | P3 | 2 | 0 | 2 |
-| **TOTAL** | **28** | **23** | **5** |
+| **TOTAL** | **28** | **24** | **4** |
 
 ---
 

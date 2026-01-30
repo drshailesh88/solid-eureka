@@ -314,3 +314,49 @@ export async function removeFromQueue(id: string): Promise<ApiResponse<null>> {
 
   return { message: 'Removed from queue' };
 }
+
+// Daily queue reset - mark stale queue entries as no_show
+// This function finds all queue entries from before today with status 'waiting' or 'in_progress'
+// and updates their status to 'no_show'
+export async function resetStaleQueueEntries(): Promise<ApiResponse<{ count: number }>> {
+  const { userId } = await auth();
+  if (!userId) return { error: 'Unauthorized' };
+
+  const supabase = createServerSupabaseClient();
+  const today = new Date().toISOString().split('T')[0];
+
+  // Find all queue entries from before today that are still waiting or in_progress
+  const { data: staleEntries, error: fetchError } = await supabase
+    .from('queue')
+    .select('id')
+    .lt('date', today)
+    .in('status', ['waiting', 'in_progress']);
+
+  if (fetchError) {
+    return { error: `Failed to fetch stale entries: ${fetchError.message}` };
+  }
+
+  if (!staleEntries || staleEntries.length === 0) {
+    return { data: { count: 0 }, message: 'No stale queue entries found' };
+  }
+
+  const staleIds = staleEntries.map((entry) => entry.id);
+
+  // Update all stale entries to no_show status
+  const { error: updateError } = await supabase
+    .from('queue')
+    .update({
+      status: 'no_show',
+      completed_at: new Date().toISOString(),
+    })
+    .in('id', staleIds);
+
+  if (updateError) {
+    return { error: `Failed to update stale entries: ${updateError.message}` };
+  }
+
+  return {
+    data: { count: staleEntries.length },
+    message: `Marked ${staleEntries.length} stale queue entries as no_show`,
+  };
+}
